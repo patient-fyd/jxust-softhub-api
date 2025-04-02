@@ -1,0 +1,1443 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "JXUST SoftHub API",
+    "version": "1.0.0",
+    "description": "API endpoints for JXUST SoftHub (官网、后台管理系统) 统一接口文档。"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:9000",
+      "description": "Local Server"
+    }
+  ],
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "summary": "用户注册",
+        "description": "注册新用户，提交用户名、密码、姓名、邮箱、电话。",
+        "requestBody": {
+          "description": "用户注册信息",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegisterRequest"
+              },
+              "example": {
+                "userName": "exampleUser",
+                "password": "examplePwd",
+                "name": "张三",
+                "email": "zhangsan@example.com",
+                "phone": "13800138000"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "注册成功返回用户信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "code": 0,
+                  "msg": "success",
+                  "data": {
+                    "userId": 1,
+                    "userName": "exampleUser",
+                    "createTime": "2025-04-02T12:00:00Z"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "用户登录",
+        "description": "用户登录接口，返回 JWT Token 与用户信息。",
+        "requestBody": {
+          "description": "登录请求参数",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginRequest"
+              },
+              "example": {
+                "userName": "exampleUser",
+                "password": "examplePwd"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功返回 Token 与用户数据",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "code": 0,
+                  "msg": "success",
+                  "data": {
+                    "token": "jwt.token.here",
+                    "user": {
+                      "userId": 1,
+                      "userName": "exampleUser",
+                      "name": "张三"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "summary": "刷新 Token",
+        "description": "根据旧 token 刷新新的 JWT token。",
+        "requestBody": {
+          "description": "旧 token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                },
+                "required": ["token"]
+              },
+              "example": {
+                "token": "old.jwt.token"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "刷新成功返回新的 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                },
+                "example": {
+                  "code": 0,
+                  "msg": "success",
+                  "data": {
+                    "token": "new.jwt.token"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "summary": "获取用户列表",
+        "description": "获取用户列表，支持分页与关键字搜索。",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "每页条数",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "搜索关键字",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回用户列表与分页信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建新用户",
+        "description": "管理员创建新用户。",
+        "requestBody": {
+          "description": "用户信息",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "用户创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{userId}": {
+      "get": {
+        "summary": "获取单个用户详情",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "用户ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回用户详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新用户信息",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "用户ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "更新用户数据",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功返回更新后的用户数据",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除用户",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "用户ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/roles": {
+      "get": {
+        "summary": "获取角色列表",
+        "responses": {
+          "200": {
+            "description": "返回角色列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建角色",
+        "requestBody": {
+          "description": "角色信息",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roleName": { "type": "string" },
+                  "description": { "type": "string" }
+                },
+                "required": ["roleName"]
+              },
+              "example": {
+                "roleName": "内容管理员",
+                "description": "负责新闻、活动等内容管理"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/roles/{roleId}": {
+      "put": {
+        "summary": "更新角色信息",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "required": true,
+            "description": "角色ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "description": "更新的角色信息",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roleName": { "type": "string" },
+                  "description": { "type": "string" }
+                },
+                "required": ["roleName"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除角色",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "required": true,
+            "description": "角色ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/news": {
+      "get": {
+        "summary": "获取新闻列表",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "description": "新闻分类",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "每页条数",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回新闻列表与分页信息",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建新闻",
+        "description": "管理员创建新闻。",
+        "requestBody": {
+          "description": "新闻信息",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string" },
+                  "category": { "type": "string" },
+                  "coverImage": { "type": "string" }
+                },
+                "required": ["title", "content", "category"]
+              },
+              "example": {
+                "title": "协会新动态",
+                "content": "这里是新闻内容，支持 Markdown 格式。",
+                "category": "协会新闻",
+                "coverImage": "http://example.com/image.jpg"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "新闻创建成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/news/{newsId}": {
+      "get": {
+        "summary": "获取新闻详情",
+        "parameters": [
+          {
+            "name": "newsId",
+            "in": "path",
+            "required": true,
+            "description": "新闻ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回新闻详情",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新新闻",
+        "parameters": [
+          {
+            "name": "newsId",
+            "in": "path",
+            "required": true,
+            "description": "新闻ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "description": "更新的新闻数据",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "content": { "type": "string" },
+                  "category": { "type": "string" },
+                  "coverImage": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除新闻",
+        "parameters": [
+          {
+            "name": "newsId",
+            "in": "path",
+            "required": true,
+            "description": "新闻ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/activities": {
+      "get": {
+        "summary": "获取活动列表",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "活动状态筛选：0-未开始, 1-进行中, 2-已结束",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "每页条数",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回活动列表与分页信息",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建活动",
+        "description": "管理员创建新活动。",
+        "requestBody": {
+          "description": "活动信息",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "startTime": { "type": "string", "format": "date-time" },
+                  "endTime": { "type": "string", "format": "date-time" },
+                  "location": { "type": "string" },
+                  "maxParticipants": { "type": "integer" },
+                  "status": { "type": "integer" }
+                },
+                "required": ["title", "description", "startTime", "endTime", "location"]
+              },
+              "example": {
+                "title": "编程大赛",
+                "description": "年度编程大赛报名中",
+                "startTime": "2025-05-01T09:00:00Z",
+                "endTime": "2025-05-01T17:00:00Z",
+                "location": "学校礼堂",
+                "maxParticipants": 100,
+                "status": 0
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "活动创建成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/activities/{activityId}": {
+      "get": {
+        "summary": "获取活动详情",
+        "parameters": [
+          {
+            "name": "activityId",
+            "in": "path",
+            "required": true,
+            "description": "活动ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回活动详情",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新活动信息",
+        "parameters": [
+          {
+            "name": "activityId",
+            "in": "path",
+            "required": true,
+            "description": "活动ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "description": "更新的活动数据",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "startTime": { "type": "string", "format": "date-time" },
+                  "endTime": { "type": "string", "format": "date-time" },
+                  "location": { "type": "string" },
+                  "maxParticipants": { "type": "integer" },
+                  "status": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除活动",
+        "parameters": [
+          {
+            "name": "activityId",
+            "in": "path",
+            "required": true,
+            "description": "活动ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/activities/{activityId}/register": {
+      "post": {
+        "summary": "活动报名",
+        "description": "用户报名参加活动。",
+        "parameters": [
+          {
+            "name": "activityId",
+            "in": "path",
+            "required": true,
+            "description": "活动ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "description": "报名信息",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "studentId": { "type": "string" },
+                  "contact": { "type": "string" }
+                },
+                "required": ["name", "studentId", "contact"]
+              },
+              "example": {
+                "name": "李四",
+                "studentId": "2025001",
+                "contact": "13800138001"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "报名成功返回报名信息",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/activities/{activityId}/registrations": {
+      "get": {
+        "summary": "获取活动报名列表",
+        "parameters": [
+          {
+            "name": "activityId",
+            "in": "path",
+            "required": true,
+            "description": "活动ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回报名列表",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects": {
+      "get": {
+        "summary": "获取项目列表",
+        "responses": {
+          "200": {
+            "description": "返回项目列表",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建项目",
+        "description": "管理员创建新项目。",
+        "requestBody": {
+          "description": "项目数据",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "techStack": { "type": "string" },
+                  "coverImage": { "type": "string" },
+                  "link": { "type": "string" }
+                },
+                "required": ["name", "description"]
+              },
+              "example": {
+                "name": "OJ 系统",
+                "description": "在线判题系统",
+                "techStack": "C++, GoFrame2",
+                "coverImage": "http://example.com/oj.jpg",
+                "link": "http://oj.example.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "项目创建成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projects/{projectId}": {
+      "get": {
+        "summary": "获取项目详情",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "description": "项目ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回项目详情",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新项目",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "description": "项目ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "description": "更新的项目数据",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "techStack": { "type": "string" },
+                  "coverImage": { "type": "string" },
+                  "link": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除项目",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "description": "项目ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/resources": {
+      "get": {
+        "summary": "获取资源列表",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "description": "资源分类",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "当前页码",
+            "schema": { "type": "integer", "default": 1 }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "每页条数",
+            "schema": { "type": "integer", "default": 10 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回资源列表",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "上传资源",
+        "description": "管理员上传新资源。",
+        "requestBody": {
+          "description": "资源信息",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "category": { "type": "string" },
+                  "filePath": { "type": "string" }
+                },
+                "required": ["title", "category", "filePath"]
+              },
+              "example": {
+                "title": "算法资料",
+                "description": "排序算法讲解",
+                "category": "算法",
+                "filePath": "http://example.com/algorithm.pdf"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "资源上传成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/resources/{resourceId}": {
+      "get": {
+        "summary": "获取资源详情",
+        "parameters": [
+          {
+            "name": "resourceId",
+            "in": "path",
+            "required": true,
+            "description": "资源ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回资源详情",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新资源信息",
+        "parameters": [
+          {
+            "name": "resourceId",
+            "in": "path",
+            "required": true,
+            "description": "资源ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "description": "更新的资源数据",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "category": { "type": "string" },
+                  "filePath": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除资源",
+        "parameters": [
+          {
+            "name": "resourceId",
+            "in": "path",
+            "required": true,
+            "description": "资源ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/comments": {
+      "get": {
+        "summary": "获取评论列表",
+        "parameters": [
+          {
+            "name": "contentType",
+            "in": "query",
+            "description": "评论类型，如 'news' 或 'activity'",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "contentId",
+            "in": "query",
+            "description": "关联内容ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回评论列表",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "添加评论",
+        "description": "用户对新闻或活动发表评论。",
+        "requestBody": {
+          "description": "评论数据",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contentType": { "type": "string" },
+                  "contentId": { "type": "integer" },
+                  "content": { "type": "string" }
+                },
+                "required": ["contentType", "contentId", "content"]
+              },
+              "example": {
+                "contentType": "news",
+                "contentId": 1,
+                "content": "非常有价值的新闻！"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "评论添加成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/comments/{commentId}": {
+      "delete": {
+        "summary": "删除评论",
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "required": true,
+            "description": "评论ID",
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/messages": {
+      "get": {
+        "summary": "获取消息列表",
+        "description": "获取当前用户的消息列表。",
+        "responses": {
+          "200": {
+            "description": "返回消息列表",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "发送消息",
+        "description": "发送消息给指定用户。",
+        "requestBody": {
+          "description": "消息内容",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "receiverId": { "type": "integer" },
+                  "content": { "type": "string" }
+                },
+                "required": ["receiverId", "content"]
+              },
+              "example": {
+                "receiverId": 2,
+                "content": "您好，请查收消息。"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "消息发送成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "summary": "获取通知列表",
+        "description": "获取当前用户的通知。",
+        "responses": {
+          "200": {
+            "description": "返回通知列表",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notifications/mark-read": {
+      "post": {
+        "summary": "批量标记通知为已读",
+        "description": "将多个通知标记为已读。",
+        "requestBody": {
+          "description": "通知ID数组",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notificationIds": {
+                    "type": "array",
+                    "items": { "type": "integer" }
+                  }
+                },
+                "required": ["notificationIds"]
+              },
+              "example": {
+                "notificationIds": [1, 2, 3]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "标记成功",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/statistics/overview": {
+      "get": {
+        "summary": "获取整体统计数据",
+        "description": "返回网站 PV、UV、用户数、活动报名数等统计数据。",
+        "responses": {
+          "200": {
+            "description": "返回统计数据",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/statistics/activities": {
+      "get": {
+        "summary": "获取活动报名统计",
+        "description": "返回各活动的报名统计数据。",
+        "responses": {
+          "200": {
+            "description": "返回活动统计数据",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/statistics/news": {
+      "get": {
+        "summary": "获取新闻浏览统计",
+        "description": "返回新闻的浏览统计数据。",
+        "responses": {
+          "200": {
+            "description": "返回新闻统计数据",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/audit-logs": {
+      "get": {
+        "summary": "获取操作日志",
+        "description": "管理员获取系统审计日志，支持通过 userId、时间范围筛选。",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "操作用户ID",
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "开始时间",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "结束时间",
+            "schema": { "type": "string", "format": "date-time" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回操作日志",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "业务状态码，0 表示成功"
+          },
+          "msg": {
+            "type": "string",
+            "description": "返回信息"
+          },
+          "data": {
+            "type": "object",
+            "description": "返回数据，具体结构视接口而定"
+          }
+        }
+      },
+      "UserRegisterRequest": {
+        "type": "object",
+        "properties": {
+          "userName": { "type": "string", "description": "用户名" },
+          "password": { "type": "string", "description": "用户密码" },
+          "name": { "type": "string", "description": "真实姓名" },
+          "email": { "type": "string", "description": "邮箱地址" },
+          "phone": { "type": "string", "description": "联系电话" }
+        },
+        "required": ["userName", "password", "name", "email", "phone"]
+      },
+      "UserLoginRequest": {
+        "type": "object",
+        "properties": {
+          "userName": { "type": "string", "description": "用户名" },
+          "password": { "type": "string", "description": "用户密码" }
+        },
+        "required": ["userName", "password"]
+      }
+    }
+  }
+}
