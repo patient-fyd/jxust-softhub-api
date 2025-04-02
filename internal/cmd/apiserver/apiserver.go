@@ -10,6 +10,11 @@ import (
 	"github.com/gogf/gf/v2/os/glog"
 
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/auth"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/file"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/join"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/member"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/stat"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/tag"
 	"github.com/patient-fyd/jxust-softhub-api/internal/service"
 	"github.com/patient-fyd/jxust-softhub-api/utility"
 )
@@ -89,6 +94,36 @@ var (
 				// 注册认证相关接口
 				group.Bind(
 					auth.NewV1(),
+				)
+
+				// 注册成员管理相关接口
+				group.Bind(
+					member.NewV1(),
+				)
+
+				// 注册入会申请相关接口
+				group.Bind(
+					join.NewV1(),
+				)
+
+				// 注册文件管理相关接口
+				group.Bind(
+					file.NewV1(),
+				)
+
+				// 注册统计分析相关接口
+				group.Bind(
+					stat.NewV1(),
+				)
+
+				// 注册标签管理相关接口
+				group.Bind(
+					tag.NewV1(),
+				)
+
+				// 注册系统配置相关接口
+				group.Bind(
+					config.NewV1(),
 				)
 			})
 			s.Run()
