@@ -98,11 +98,7 @@ func (s *sAuth) Register(ctx context.Context, in model.RegisterInput) (*model.Re
 		return nil, gerror.Wrap(err, "获取用户ID失败")
 	}
 
-	// 7. 插入用户-角色关系
-	// 注：由于我们直接在用户表中已经设置了角色，这里省略了角色权限表的操作
-	// role-permission关系需要在后续的权限系统中完善
-
-	// 8. 返回用户信息
+	// 7. 返回用户信息
 	return &model.RegisterOutput{
 		UserId:     uint(userId),
 		UserName:   in.UserName,

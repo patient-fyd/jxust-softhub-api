@@ -6,4 +6,5 @@ package logic
 
 import (
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/middleware"
+	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/auth"
 )

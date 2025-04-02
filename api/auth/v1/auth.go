@@ -6,7 +6,7 @@ import (
 
 // RegisterReq 用户注册请求
 type RegisterReq struct {
-	g.Meta   `path:"/auth/register" method:"post" tags:"AuthService" summary:"用户注册"`
+	g.Meta   `path:"/api/auth/register" method:"post" tags:"AuthService" summary:"用户注册"`
 	UserName string `p:"userName" v:"required|length:4,30#用户名不能为空|用户名长度应当在:min到:max之间"`
 	Password string `p:"password" v:"required|length:6,30#密码不能为空|密码长度应当在:min到:max之间"`
 	Name     string `p:"name" v:"required|length:2,50#真实姓名不能为空|真实姓名长度应当在:min到:max之间"`
@@ -23,7 +23,7 @@ type RegisterRes struct {
 
 // LoginReq 用户登录请求
 type LoginReq struct {
-	g.Meta   `path:"/auth/login" method:"post" tags:"AuthService" summary:"用户登录"`
+	g.Meta   `path:"/api/auth/login" method:"post" tags:"AuthService" summary:"用户登录"`
 	UserName string `p:"userName" v:"required#用户名不能为空"`
 	Password string `p:"password" v:"required#密码不能为空"`
 }
@@ -43,7 +43,7 @@ type LoginUser struct {
 
 // RefreshTokenReq Token刷新请求
 type RefreshTokenReq struct {
-	g.Meta `path:"/auth/refresh" method:"post" tags:"AuthService" summary:"刷新Token"`
+	g.Meta `path:"/api/auth/refresh" method:"post" tags:"AuthService" summary:"刷新Token"`
 	Token  string `p:"token" v:"required#Token不能为空"`
 }
 
