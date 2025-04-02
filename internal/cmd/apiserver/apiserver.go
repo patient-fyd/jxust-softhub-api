@@ -9,6 +9,7 @@ import (
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/glog"
 
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/auth"
 	"github.com/patient-fyd/jxust-softhub-api/internal/service"
 	"github.com/patient-fyd/jxust-softhub-api/utility"
 )
@@ -85,10 +86,10 @@ var (
 				service.Middleware().ResponseHandler,
 			)
 			s.Group("/v1", func(group *ghttp.RouterGroup) {
-				// TODO: 在此处添加新的控制器绑定
-				// group.Bind(
-				//     // 在此处添加新的控制器
-				// )
+				// 注册认证相关接口
+				group.Bind(
+					auth.NewV1(),
+				)
 			})
 			s.Run()
 			return nil
