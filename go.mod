@@ -7,6 +7,7 @@ require (
 	github.com/gogf/gf/contrib/nosql/redis/v2 v2.5.6
 	github.com/gogf/gf/contrib/sdk/httpclient/v2 v2.5.6
 	github.com/gogf/gf/v2 v2.5.6
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/qiniu/qmgo v1.1.7
 	github.com/satori/go.uuid v1.2.0
 	github.com/segmentio/kafka-go v0.4.40
@@ -25,7 +26,6 @@ require (
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grokify/html-strip-tags-go v0.0.1 // indirect

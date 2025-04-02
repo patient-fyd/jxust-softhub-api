@@ -3,32 +3,149 @@
   "info": {
     "title": "JXUST SoftHub API",
     "version": "1.0.0",
-    "description": "API endpoints for JXUST SoftHub (官网、后台管理系统) 统一接口文档。"
+    "description": "JXUST SoftHub 前台与后台管理系统接口文档，所有接口遵循 RESTful 风格，返回格式统一为 { code, message, traceid, data }。支持 JWT 鉴权与权限校验。"
   },
   "servers": [
     {
       "url": "http://localhost:9000",
-      "description": "Local Server"
+      "description": "本地开发环境"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "业务状态码，0 表示成功，其它值表示错误"
+          },
+          "message": {
+            "type": "string",
+            "description": "返回信息描述"
+          },
+          "traceid": {
+            "type": "string",
+            "description": "请求追踪 ID"
+          },
+          "data": {
+            "type": "object",
+            "description": "返回数据，具体结构视接口而定"
+          }
+        }
+      },
+      "UserRegisterRequest": {
+        "type": "object",
+        "properties": {
+          "userName": { "type": "string", "description": "用户名" },
+          "password": { "type": "string", "description": "用户密码" },
+          "name": { "type": "string", "description": "真实姓名" },
+          "email": { "type": "string", "description": "电子邮箱" },
+          "phone": { "type": "string", "description": "联系电话" }
+        },
+        "required": ["userName", "password", "name", "email", "phone"]
+      },
+      "UserLoginRequest": {
+        "type": "object",
+        "properties": {
+          "userName": { "type": "string", "description": "用户名" },
+          "password": { "type": "string", "description": "用户密码" }
+        },
+        "required": ["userName", "password"]
+      },
+      "UserInfo": {
+        "type": "object",
+        "properties": {
+          "userId": { "type": "integer", "description": "用户ID" },
+          "userName": { "type": "string", "description": "用户名" },
+          "name": { "type": "string", "description": "真实姓名" },
+          "roleId": { "type": "integer", "description": "用户角色ID" }
+        }
+      },
+      "ApplyJoinRequest": {
+        "type": "object",
+        "properties": {
+          "introduction": {
+            "type": "string",
+            "description": "入会申请说明"
+          },
+          "department": {
+            "type": "string",
+            "description": "申请加入的部门，如技术部、设计部等"
+          }
+        },
+        "required": ["introduction", "department"]
+      },
+      "AssignRoleRequest": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "integer",
+            "description": "分配给用户的新角色ID"
+          }
+        },
+        "required": ["roleId"]
+      },
+      "NewsItem": {
+        "type": "object",
+        "properties": {
+          "newsId": { "type": "integer", "description": "新闻ID" },
+          "title": { "type": "string", "description": "新闻标题" },
+          "content": { "type": "string", "description": "新闻内容" },
+          "category": { "type": "string", "description": "新闻分类" },
+          "coverImage": { "type": "string", "description": "封面图片 URL" },
+          "createTime": { "type": "string", "format": "date-time", "description": "创建时间" }
+        }
+      },
+      "ActivityItem": {
+        "type": "object",
+        "properties": {
+          "activityId": { "type": "integer", "description": "活动ID" },
+          "title": { "type": "string", "description": "活动标题" },
+          "description": { "type": "string", "description": "活动描述" },
+          "startTime": { "type": "string", "format": "date-time", "description": "开始时间" },
+          "endTime": { "type": "string", "format": "date-time", "description": "结束时间" },
+          "location": { "type": "string", "description": "活动地点" }
+        }
+      },
+      "RoleItem": {
+        "type": "object",
+        "properties": {
+          "roleId": { "type": "integer", "description": "角色ID" },
+          "roleName": { "type": "string", "description": "角色名称" },
+          "description": { "type": "string", "description": "角色描述" }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
     }
   ],
   "paths": {
-    "/api/auth/register": {
+    "/api/auth/v1/register": {
       "post": {
         "summary": "用户注册",
-        "description": "注册新用户，提交用户名、密码、姓名、邮箱、电话。",
+        "description": "前台用户注册接口，所有注册用户默认 roleId 为 0（普通学生）。",
         "requestBody": {
           "description": "用户注册信息",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserRegisterRequest"
-              },
+              "schema": { "$ref": "#/components/schemas/UserRegisterRequest" },
               "example": {
-                "userName": "exampleUser",
-                "password": "examplePwd",
-                "name": "张三",
-                "email": "zhangsan@example.com",
+                "userName": "student001",
+                "password": "password123",
+                "name": "李明",
+                "email": "liming@example.com",
                 "phone": "13800138000"
               }
             }
@@ -36,63 +153,20 @@
         },
         "responses": {
           "200": {
-            "description": "注册成功返回用户信息",
+            "description": "注册成功，返回用户信息（roleId 默认为 0）",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
-                },
+                "schema": { "$ref": "#/components/schemas/ApiResponse" },
                 "example": {
                   "code": 0,
-                  "msg": "success",
+                  "message": "注册成功",
+                  "traceid": "reg12345",
                   "data": {
-                    "userId": 1,
-                    "userName": "exampleUser",
-                    "createTime": "2025-04-02T12:00:00Z"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/auth/login": {
-      "post": {
-        "summary": "用户登录",
-        "description": "用户登录接口，返回 JWT Token 与用户信息。",
-        "requestBody": {
-          "description": "登录请求参数",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserLoginRequest"
-              },
-              "example": {
-                "userName": "exampleUser",
-                "password": "examplePwd"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "登录成功返回 Token 与用户数据",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
-                },
-                "example": {
-                  "code": 0,
-                  "msg": "success",
-                  "data": {
-                    "token": "jwt.token.here",
                     "user": {
-                      "userId": 1,
-                      "userName": "exampleUser",
-                      "name": "张三"
+                      "userId": 101,
+                      "userName": "student001",
+                      "name": "李明",
+                      "roleId": 0
                     }
                   }
                 }
@@ -102,43 +176,152 @@
         }
       }
     },
-    "/api/auth/refresh": {
+    "/api/auth/v1/login": {
+      "post": {
+        "summary": "用户登录",
+        "description": "前台用户登录接口，返回 JWT Token 与用户基本信息。",
+        "requestBody": {
+          "description": "用户登录请求参数",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserLoginRequest" },
+              "example": {
+                "userName": "student001",
+                "password": "password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功，返回 Token 与用户信息",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" },
+                "example": {
+                  "code": 0,
+                  "message": "登录成功",
+                  "traceid": "login1234",
+                  "data": {
+                    "token": "jwt.token.here",
+                    "user": {
+                      "userId": 101,
+                      "userName": "student001",
+                      "name": "李明",
+                      "roleId": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/v1/admin/login": {
+      "post": {
+        "summary": "终极管理员登录",
+        "description": "后台管理系统终极管理员登录接口，要求权限校验更严格。",
+        "requestBody": {
+          "description": "管理员登录请求参数",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserLoginRequest" },
+              "example": {
+                "userName": "admin",
+                "password": "adminSecret"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "管理员登录成功，返回 Token 与管理员信息",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" },
+                "example": {
+                  "code": 0,
+                  "message": "登录成功",
+                  "traceid": "adminlogin123",
+                  "data": {
+                    "token": "jwt.admin.token.here",
+                    "user": {
+                      "userId": 1,
+                      "userName": "admin",
+                      "name": "超级管理员",
+                      "roleId": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/v1/refresh": {
       "post": {
         "summary": "刷新 Token",
-        "description": "根据旧 token 刷新新的 JWT token。",
+        "description": "根据旧 Token 刷新新的 JWT Token。",
         "requestBody": {
-          "description": "旧 token",
+          "description": "需要刷新 Token 的旧 Token",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "token": {
-                    "type": "string"
-                  }
+                  "token": { "type": "string", "description": "旧 Token" }
                 },
                 "required": ["token"]
               },
-              "example": {
-                "token": "old.jwt.token"
-              }
+              "example": { "token": "old.jwt.token" }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "刷新成功返回新的 token",
+            "description": "刷新成功返回新的 Token",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
-                },
+                "schema": { "$ref": "#/components/schemas/ApiResponse" },
                 "example": {
                   "code": 0,
-                  "msg": "success",
+                  "message": "刷新成功",
+                  "traceid": "refresh1234",
+                  "data": { "token": "new.jwt.token" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/v1/info": {
+      "get": {
+        "summary": "获取当前用户信息",
+        "description": "返回当前登录用户的详细信息。",
+        "security": [ { "bearerAuth": [] } ],
+        "responses": {
+          "200": {
+            "description": "返回用户信息",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" },
+                "example": {
+                  "code": 0,
+                  "message": "success",
+                  "traceid": "info1234",
                   "data": {
-                    "token": "new.jwt.token"
+                    "user": {
+                      "userId": 101,
+                      "userName": "student001",
+                      "name": "李明",
+                      "roleId": 0
+                    }
                   }
                 }
               }
@@ -147,218 +330,57 @@
         }
       }
     },
-    "/api/users": {
+    "/api/user/v1/list": {
       "get": {
-        "summary": "获取用户列表",
-        "description": "获取用户列表，支持分页与关键字搜索。",
+        "summary": "获取用户列表（后台）",
+        "description": "管理员接口：返回所有用户列表，支持分页与搜索。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "当前页码",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "每页条数",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "keyword",
-            "in": "query",
-            "description": "搜索关键字",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
+          { "name": "page", "in": "query", "description": "当前页码", "schema": { "type": "integer", "default": 1 } },
+          { "name": "pageSize", "in": "query", "description": "每页数量", "schema": { "type": "integer", "default": 10 } },
+          { "name": "keyword", "in": "query", "description": "搜索关键字", "schema": { "type": "string" } }
         ],
         "responses": {
           "200": {
-            "description": "返回用户列表与分页信息",
+            "description": "返回用户列表及分页数据",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "创建新用户",
-        "description": "管理员创建新用户。",
-        "requestBody": {
-          "description": "用户信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserRegisterRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "用户创建成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
               }
             }
           }
         }
       }
     },
-    "/api/users/{userId}": {
-      "get": {
-        "summary": "获取单个用户详情",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "description": "用户ID",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "返回用户详情",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "更新用户信息",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "description": "用户ID",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "更新用户数据",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserRegisterRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "更新成功返回更新后的用户数据",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "删除用户",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "description": "用户ID",
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "删除成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/roles": {
-      "get": {
-        "summary": "获取角色列表",
-        "responses": {
-          "200": {
-            "description": "返回角色列表",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/api/user/v1/apply-join": {
       "post": {
-        "summary": "创建角色",
+        "summary": "提交入会申请",
+        "description": "前台接口：已注册用户提交入会申请，等待管理员审核。",
+        "security": [ { "bearerAuth": [] } ],
         "requestBody": {
-          "description": "角色信息",
+          "description": "入会申请信息",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "roleName": { "type": "string" },
-                  "description": { "type": "string" }
-                },
-                "required": ["roleName"]
-              },
+              "schema": { "$ref": "#/components/schemas/ApplyJoinRequest" },
               "example": {
-                "roleName": "内容管理员",
-                "description": "负责新闻、活动等内容管理"
+                "introduction": "我热爱编程，想加入开发部门。",
+                "department": "技术部"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "创建成功",
+            "description": "申请提交成功",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
+                "schema": { "$ref": "#/components/schemas/ApiResponse" },
+                "example": {
+                  "code": 0,
+                  "message": "申请提交成功",
+                  "traceid": "apply1234",
+                  "data": {}
                 }
               }
             }
@@ -366,59 +388,50 @@
         }
       }
     },
-    "/api/roles/{roleId}": {
+    "/api/user/v1/{userId}/role": {
       "put": {
-        "summary": "更新角色信息",
+        "summary": "分配用户角色",
+        "description": "后台管理员接口：为指定用户分配角色（更新 roleId）。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "roleId",
-            "in": "path",
-            "required": true,
-            "description": "角色ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "userId", "in": "path", "required": true, "description": "用户ID", "schema": { "type": "integer" } }
         ],
         "requestBody": {
-          "description": "更新的角色信息",
+          "description": "分配的角色信息",
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "roleName": { "type": "string" },
-                  "description": { "type": "string" }
-                },
-                "required": ["roleName"]
-              }
+              "schema": { "$ref": "#/components/schemas/AssignRoleRequest" },
+              "example": { "roleId": 10 }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "更新成功",
+            "description": "角色分配成功",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+                "schema": { "$ref": "#/components/schemas/ApiResponse" },
+                "example": {
+                  "code": 0,
+                  "message": "角色更新成功",
+                  "traceid": "roleassign123",
+                  "data": {}
+                }
               }
             }
           }
         }
-      },
-      "delete": {
-        "summary": "删除角色",
-        "parameters": [
-          {
-            "name": "roleId",
-            "in": "path",
-            "required": true,
-            "description": "角色ID",
-            "schema": { "type": "integer" }
-          }
-        ],
+      }
+    },
+    "/api/user/v1/application-list": {
+      "get": {
+        "summary": "获取入会申请列表",
+        "description": "后台管理员接口：返回所有待审核的入会申请列表。",
+        "security": [ { "bearerAuth": [] } ],
         "responses": {
           "200": {
-            "description": "删除成功",
+            "description": "返回入会申请列表数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -428,32 +441,18 @@
         }
       }
     },
-    "/api/news": {
+    "/api/news/v1": {
       "get": {
         "summary": "获取新闻列表",
+        "description": "前台接口：返回新闻列表，支持分类与分页查询。",
         "parameters": [
-          {
-            "name": "category",
-            "in": "query",
-            "description": "新闻分类",
-            "schema": { "type": "string" }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "当前页码",
-            "schema": { "type": "integer", "default": 1 }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "每页条数",
-            "schema": { "type": "integer", "default": 10 }
-          }
+          { "name": "category", "in": "query", "description": "新闻分类", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "description": "当前页码", "schema": { "type": "integer", "default": 1 } },
+          { "name": "pageSize", "in": "query", "description": "每页数量", "schema": { "type": "integer", "default": 10 } }
         ],
         "responses": {
           "200": {
-            "description": "返回新闻列表与分页信息",
+            "description": "返回新闻列表数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -463,8 +462,9 @@
         }
       },
       "post": {
-        "summary": "创建新闻",
-        "description": "管理员创建新闻。",
+        "summary": "创建新闻（后台）",
+        "description": "管理员接口：创建新的新闻条目。",
+        "security": [ { "bearerAuth": [] } ],
         "requestBody": {
           "description": "新闻信息",
           "required": true,
@@ -481,10 +481,10 @@
                 "required": ["title", "content", "category"]
               },
               "example": {
-                "title": "协会新动态",
-                "content": "这里是新闻内容，支持 Markdown 格式。",
+                "title": "协会新闻",
+                "content": "详细内容支持 Markdown 格式",
                 "category": "协会新闻",
-                "coverImage": "http://example.com/image.jpg"
+                "coverImage": "http://example.com/cover.jpg"
               }
             }
           }
@@ -501,21 +501,16 @@
         }
       }
     },
-    "/api/news/{newsId}": {
+    "/api/news/v1/{newsId}": {
       "get": {
         "summary": "获取新闻详情",
+        "description": "返回指定新闻的详细内容。",
         "parameters": [
-          {
-            "name": "newsId",
-            "in": "path",
-            "required": true,
-            "description": "新闻ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "newsId", "in": "path", "required": true, "description": "新闻ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
-            "description": "返回新闻详情",
+            "description": "返回新闻详情数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -525,15 +520,11 @@
         }
       },
       "put": {
-        "summary": "更新新闻",
+        "summary": "更新新闻（后台）",
+        "description": "管理员接口：更新指定新闻内容。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "newsId",
-            "in": "path",
-            "required": true,
-            "description": "新闻ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "newsId", "in": "path", "required": true, "description": "新闻ID", "schema": { "type": "integer" } }
         ],
         "requestBody": {
           "description": "更新的新闻数据",
@@ -564,15 +555,11 @@
         }
       },
       "delete": {
-        "summary": "删除新闻",
+        "summary": "删除新闻（后台）",
+        "description": "管理员接口：删除指定新闻。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "newsId",
-            "in": "path",
-            "required": true,
-            "description": "新闻ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "newsId", "in": "path", "required": true, "description": "新闻ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
@@ -586,32 +573,18 @@
         }
       }
     },
-    "/api/activities": {
+    "/api/activity/v1": {
       "get": {
         "summary": "获取活动列表",
+        "description": "返回活动列表，支持分页和状态筛选。",
         "parameters": [
-          {
-            "name": "status",
-            "in": "query",
-            "description": "活动状态筛选：0-未开始, 1-进行中, 2-已结束",
-            "schema": { "type": "integer" }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "当前页码",
-            "schema": { "type": "integer", "default": 1 }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "每页条数",
-            "schema": { "type": "integer", "default": 10 }
-          }
+          { "name": "status", "in": "query", "description": "活动状态筛选：0-未开始, 1-进行中, 2-已结束", "schema": { "type": "integer" } },
+          { "name": "page", "in": "query", "description": "当前页码", "schema": { "type": "integer", "default": 1 } },
+          { "name": "pageSize", "in": "query", "description": "每页数量", "schema": { "type": "integer", "default": 10 } }
         ],
         "responses": {
           "200": {
-            "description": "返回活动列表与分页信息",
+            "description": "返回活动列表数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -621,8 +594,9 @@
         }
       },
       "post": {
-        "summary": "创建活动",
-        "description": "管理员创建新活动。",
+        "summary": "创建活动（后台）",
+        "description": "管理员接口：创建新的活动。",
+        "security": [ { "bearerAuth": [] } ],
         "requestBody": {
           "description": "活动信息",
           "required": true,
@@ -643,7 +617,7 @@
               },
               "example": {
                 "title": "编程大赛",
-                "description": "年度编程大赛报名中",
+                "description": "年度编程大赛",
                 "startTime": "2025-05-01T09:00:00Z",
                 "endTime": "2025-05-01T17:00:00Z",
                 "location": "学校礼堂",
@@ -665,21 +639,16 @@
         }
       }
     },
-    "/api/activities/{activityId}": {
+    "/api/activity/v1/{activityId}": {
       "get": {
         "summary": "获取活动详情",
+        "description": "返回指定活动的详细信息。",
         "parameters": [
-          {
-            "name": "activityId",
-            "in": "path",
-            "required": true,
-            "description": "活动ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "activityId", "in": "path", "required": true, "description": "活动ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
-            "description": "返回活动详情",
+            "description": "返回活动详情数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -689,15 +658,11 @@
         }
       },
       "put": {
-        "summary": "更新活动信息",
+        "summary": "更新活动（后台）",
+        "description": "管理员接口：更新指定活动信息。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "activityId",
-            "in": "path",
-            "required": true,
-            "description": "活动ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "activityId", "in": "path", "required": true, "description": "活动ID", "schema": { "type": "integer" } }
         ],
         "requestBody": {
           "description": "更新的活动数据",
@@ -731,15 +696,11 @@
         }
       },
       "delete": {
-        "summary": "删除活动",
+        "summary": "删除活动（后台）",
+        "description": "管理员接口：删除指定活动。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "activityId",
-            "in": "path",
-            "required": true,
-            "description": "活动ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "activityId", "in": "path", "required": true, "description": "活动ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
@@ -753,18 +714,12 @@
         }
       }
     },
-    "/api/activities/{activityId}/register": {
+    "/api/activity/v1/{activityId}/register": {
       "post": {
         "summary": "活动报名",
-        "description": "用户报名参加活动。",
+        "description": "前台接口：用户报名参加指定活动。",
         "parameters": [
-          {
-            "name": "activityId",
-            "in": "path",
-            "required": true,
-            "description": "活动ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "activityId", "in": "path", "required": true, "description": "活动ID", "schema": { "type": "integer" } }
         ],
         "requestBody": {
           "description": "报名信息",
@@ -781,9 +736,9 @@
                 "required": ["name", "studentId", "contact"]
               },
               "example": {
-                "name": "李四",
-                "studentId": "2025001",
-                "contact": "13800138001"
+                "name": "王五",
+                "studentId": "2025002",
+                "contact": "13800138002"
               }
             }
           }
@@ -800,21 +755,17 @@
         }
       }
     },
-    "/api/activities/{activityId}/registrations": {
+    "/api/activity/v1/{activityId}/registrations": {
       "get": {
-        "summary": "获取活动报名列表",
+        "summary": "获取活动报名列表（后台）",
+        "description": "管理员接口：返回指定活动的报名列表。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "activityId",
-            "in": "path",
-            "required": true,
-            "description": "活动ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "activityId", "in": "path", "required": true, "description": "活动ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
-            "description": "返回报名列表",
+            "description": "返回报名列表数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -824,12 +775,13 @@
         }
       }
     },
-    "/api/projects": {
+    "/api/project/v1": {
       "get": {
         "summary": "获取项目列表",
+        "description": "前台接口：返回项目列表。",
         "responses": {
           "200": {
-            "description": "返回项目列表",
+            "description": "返回项目列表数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -839,8 +791,9 @@
         }
       },
       "post": {
-        "summary": "创建项目",
-        "description": "管理员创建新项目。",
+        "summary": "创建项目（后台）",
+        "description": "管理员接口：创建新项目。",
+        "security": [ { "bearerAuth": [] } ],
         "requestBody": {
           "description": "项目数据",
           "required": true,
@@ -879,21 +832,16 @@
         }
       }
     },
-    "/api/projects/{projectId}": {
+    "/api/project/v1/{projectId}": {
       "get": {
         "summary": "获取项目详情",
+        "description": "返回指定项目的详细信息。",
         "parameters": [
-          {
-            "name": "projectId",
-            "in": "path",
-            "required": true,
-            "description": "项目ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "projectId", "in": "path", "required": true, "description": "项目ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
-            "description": "返回项目详情",
+            "description": "返回项目详情数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -903,15 +851,11 @@
         }
       },
       "put": {
-        "summary": "更新项目",
+        "summary": "更新项目（后台）",
+        "description": "管理员接口：更新指定项目信息。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "projectId",
-            "in": "path",
-            "required": true,
-            "description": "项目ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "projectId", "in": "path", "required": true, "description": "项目ID", "schema": { "type": "integer" } }
         ],
         "requestBody": {
           "description": "更新的项目数据",
@@ -943,15 +887,11 @@
         }
       },
       "delete": {
-        "summary": "删除项目",
+        "summary": "删除项目（后台）",
+        "description": "管理员接口：删除指定项目。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "projectId",
-            "in": "path",
-            "required": true,
-            "description": "项目ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "projectId", "in": "path", "required": true, "description": "项目ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
@@ -965,32 +905,18 @@
         }
       }
     },
-    "/api/resources": {
+    "/api/resource/v1": {
       "get": {
         "summary": "获取资源列表",
+        "description": "前台接口：返回资源列表，支持分类筛选与分页。",
         "parameters": [
-          {
-            "name": "category",
-            "in": "query",
-            "description": "资源分类",
-            "schema": { "type": "string" }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "当前页码",
-            "schema": { "type": "integer", "default": 1 }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "每页条数",
-            "schema": { "type": "integer", "default": 10 }
-          }
+          { "name": "category", "in": "query", "description": "资源分类", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "description": "当前页码", "schema": { "type": "integer", "default": 1 } },
+          { "name": "pageSize", "in": "query", "description": "每页数量", "schema": { "type": "integer", "default": 10 } }
         ],
         "responses": {
           "200": {
-            "description": "返回资源列表",
+            "description": "返回资源列表数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -1000,10 +926,11 @@
         }
       },
       "post": {
-        "summary": "上传资源",
-        "description": "管理员上传新资源。",
+        "summary": "上传资源（后台）",
+        "description": "管理员接口：上传新的资源文件。",
+        "security": [ { "bearerAuth": [] } ],
         "requestBody": {
-          "description": "资源信息",
+          "description": "资源数据",
           "required": true,
           "content": {
             "application/json": {
@@ -1018,10 +945,10 @@
                 "required": ["title", "category", "filePath"]
               },
               "example": {
-                "title": "算法资料",
-                "description": "排序算法讲解",
-                "category": "算法",
-                "filePath": "http://example.com/algorithm.pdf"
+                "title": "编程教程",
+                "description": "教程文档下载",
+                "category": "教程",
+                "filePath": "http://example.com/tutorial.pdf"
               }
             }
           }
@@ -1038,21 +965,16 @@
         }
       }
     },
-    "/api/resources/{resourceId}": {
+    "/api/resource/v1/{resourceId}": {
       "get": {
         "summary": "获取资源详情",
+        "description": "返回指定资源的详细信息。",
         "parameters": [
-          {
-            "name": "resourceId",
-            "in": "path",
-            "required": true,
-            "description": "资源ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "resourceId", "in": "path", "required": true, "description": "资源ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
-            "description": "返回资源详情",
+            "description": "返回资源详情数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -1062,15 +984,11 @@
         }
       },
       "put": {
-        "summary": "更新资源信息",
+        "summary": "更新资源（后台）",
+        "description": "管理员接口：更新指定资源信息。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "resourceId",
-            "in": "path",
-            "required": true,
-            "description": "资源ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "resourceId", "in": "path", "required": true, "description": "资源ID", "schema": { "type": "integer" } }
         ],
         "requestBody": {
           "description": "更新的资源数据",
@@ -1101,15 +1019,11 @@
         }
       },
       "delete": {
-        "summary": "删除资源",
+        "summary": "删除资源（后台）",
+        "description": "管理员接口：删除指定资源。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "resourceId",
-            "in": "path",
-            "required": true,
-            "description": "资源ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "resourceId", "in": "path", "required": true, "description": "资源ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
@@ -1123,26 +1037,17 @@
         }
       }
     },
-    "/api/comments": {
+    "/api/comment/v1": {
       "get": {
         "summary": "获取评论列表",
+        "description": "根据 contentType 与 contentId 返回评论列表。",
         "parameters": [
-          {
-            "name": "contentType",
-            "in": "query",
-            "description": "评论类型，如 'news' 或 'activity'",
-            "schema": { "type": "string" }
-          },
-          {
-            "name": "contentId",
-            "in": "query",
-            "description": "关联内容ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "contentType", "in": "query", "description": "内容类型，例如 news 或 activity", "schema": { "type": "string" } },
+          { "name": "contentId", "in": "query", "description": "关联内容ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
-            "description": "返回评论列表",
+            "description": "返回评论列表数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -1153,7 +1058,8 @@
       },
       "post": {
         "summary": "添加评论",
-        "description": "用户对新闻或活动发表评论。",
+        "description": "前台接口：用户对指定内容添加评论。",
+        "security": [ { "bearerAuth": [] } ],
         "requestBody": {
           "description": "评论数据",
           "required": true,
@@ -1171,7 +1077,7 @@
               "example": {
                 "contentType": "news",
                 "contentId": 1,
-                "content": "非常有价值的新闻！"
+                "content": "非常有价值的文章！"
               }
             }
           }
@@ -1188,17 +1094,13 @@
         }
       }
     },
-    "/api/comments/{commentId}": {
+    "/api/comment/v1/{commentId}": {
       "delete": {
-        "summary": "删除评论",
+        "summary": "删除评论（后台）",
+        "description": "管理员接口：删除指定评论。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "commentId",
-            "in": "path",
-            "required": true,
-            "description": "评论ID",
-            "schema": { "type": "integer" }
-          }
+          { "name": "commentId", "in": "path", "required": true, "description": "评论ID", "schema": { "type": "integer" } }
         ],
         "responses": {
           "200": {
@@ -1212,13 +1114,14 @@
         }
       }
     },
-    "/api/messages": {
+    "/api/message/v1": {
       "get": {
         "summary": "获取消息列表",
-        "description": "获取当前用户的消息列表。",
+        "description": "返回当前用户的私信消息列表。",
+        "security": [ { "bearerAuth": [] } ],
         "responses": {
           "200": {
-            "description": "返回消息列表",
+            "description": "返回消息列表数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -1229,7 +1132,8 @@
       },
       "post": {
         "summary": "发送消息",
-        "description": "发送消息给指定用户。",
+        "description": "前台接口：发送消息给其他用户。",
+        "security": [ { "bearerAuth": [] } ],
         "requestBody": {
           "description": "消息内容",
           "required": true,
@@ -1262,13 +1166,14 @@
         }
       }
     },
-    "/api/notifications": {
+    "/api/notification/v1": {
       "get": {
         "summary": "获取通知列表",
-        "description": "获取当前用户的通知。",
+        "description": "返回当前用户的通知。",
+        "security": [ { "bearerAuth": [] } ],
         "responses": {
           "200": {
-            "description": "返回通知列表",
+            "description": "返回通知列表数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -1278,10 +1183,11 @@
         }
       }
     },
-    "/api/notifications/mark-read": {
+    "/api/notification/v1/mark-read": {
       "post": {
-        "summary": "批量标记通知为已读",
-        "description": "将多个通知标记为已读。",
+        "summary": "标记通知为已读",
+        "description": "将指定通知标记为已读。",
+        "security": [ { "bearerAuth": [] } ],
         "requestBody": {
           "description": "通知ID数组",
           "required": true,
@@ -1315,10 +1221,11 @@
         }
       }
     },
-    "/api/statistics/overview": {
+    "/api/statistic/v1/overview": {
       "get": {
         "summary": "获取整体统计数据",
-        "description": "返回网站 PV、UV、用户数、活动报名数等统计数据。",
+        "description": "返回网站整体统计数据，如 PV、UV、用户数、活动报名数等。",
+        "security": [ { "bearerAuth": [] } ],
         "responses": {
           "200": {
             "description": "返回统计数据",
@@ -1331,10 +1238,11 @@
         }
       }
     },
-    "/api/statistics/activities": {
+    "/api/statistic/v1/activity": {
       "get": {
-        "summary": "获取活动报名统计",
+        "summary": "获取活动统计数据",
         "description": "返回各活动的报名统计数据。",
+        "security": [ { "bearerAuth": [] } ],
         "responses": {
           "200": {
             "description": "返回活动统计数据",
@@ -1347,10 +1255,11 @@
         }
       }
     },
-    "/api/statistics/news": {
+    "/api/statistic/v1/news": {
       "get": {
-        "summary": "获取新闻浏览统计",
-        "description": "返回新闻的浏览统计数据。",
+        "summary": "获取新闻统计数据",
+        "description": "返回新闻浏览统计数据。",
+        "security": [ { "bearerAuth": [] } ],
         "responses": {
           "200": {
             "description": "返回新闻统计数据",
@@ -1363,33 +1272,19 @@
         }
       }
     },
-    "/api/audit-logs": {
+    "/api/audit/v1": {
       "get": {
-        "summary": "获取操作日志",
-        "description": "管理员获取系统审计日志，支持通过 userId、时间范围筛选。",
+        "summary": "获取操作审计日志（后台）",
+        "description": "管理员接口：返回系统操作日志，支持通过 userId、时间范围筛选。",
+        "security": [ { "bearerAuth": [] } ],
         "parameters": [
-          {
-            "name": "userId",
-            "in": "query",
-            "description": "操作用户ID",
-            "schema": { "type": "integer" }
-          },
-          {
-            "name": "startTime",
-            "in": "query",
-            "description": "开始时间",
-            "schema": { "type": "string", "format": "date-time" }
-          },
-          {
-            "name": "endTime",
-            "in": "query",
-            "description": "结束时间",
-            "schema": { "type": "string", "format": "date-time" }
-          }
+          { "name": "userId", "in": "query", "description": "操作用户ID", "schema": { "type": "integer" } },
+          { "name": "startTime", "in": "query", "description": "开始时间", "schema": { "type": "string", "format": "date-time" } },
+          { "name": "endTime", "in": "query", "description": "结束时间", "schema": { "type": "string", "format": "date-time" } }
         ],
         "responses": {
           "200": {
-            "description": "返回操作日志",
+            "description": "返回审计日志数据",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ApiResponse" }
@@ -1398,45 +1293,33 @@
           }
         }
       }
-    }
-  },
-  "components": {
-    "schemas": {
-      "ApiResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "业务状态码，0 表示成功"
-          },
-          "msg": {
-            "type": "string",
-            "description": "返回信息"
-          },
-          "data": {
-            "type": "object",
-            "description": "返回数据，具体结构视接口而定"
+    },
+    "/api/role/v1/all": {
+      "get": {
+        "summary": "获取角色列表",
+        "description": "返回所有可用角色列表，用于前台下拉或后台展示。",
+        "responses": {
+          "200": {
+            "description": "返回角色列表数据",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" },
+                "example": {
+                  "code": 0,
+                  "message": "success",
+                  "traceid": "rolelist123",
+                  "data": {
+                    "roles": [
+                      { "roleId": 0, "roleName": "学生", "description": "普通学生" },
+                      { "roleId": 10, "roleName": "普通会员", "description": "正式会员" },
+                      { "roleId": 2, "roleName": "会长", "description": "协会会长" }
+                    ]
+                  }
+                }
+              }
+            }
           }
         }
-      },
-      "UserRegisterRequest": {
-        "type": "object",
-        "properties": {
-          "userName": { "type": "string", "description": "用户名" },
-          "password": { "type": "string", "description": "用户密码" },
-          "name": { "type": "string", "description": "真实姓名" },
-          "email": { "type": "string", "description": "邮箱地址" },
-          "phone": { "type": "string", "description": "联系电话" }
-        },
-        "required": ["userName", "password", "name", "email", "phone"]
-      },
-      "UserLoginRequest": {
-        "type": "object",
-        "properties": {
-          "userName": { "type": "string", "description": "用户名" },
-          "password": { "type": "string", "description": "用户密码" }
-        },
-        "required": ["userName", "password"]
       }
     }
   }
