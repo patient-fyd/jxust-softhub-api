@@ -14,8 +14,8 @@ import (
 )
 
 type response struct {
-	Code    string      `json:"code"`
-	Message string      `json:"message"`
+	Code    int         `json:"code"`
+	Message string      `json:"msg"`
 	TraceID string      `json:"traceid"`
 	Data    interface{} `json:"data"`
 }
@@ -85,8 +85,18 @@ func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 	}
 
 	r.Response.WriteHeader(bizCode.BizDetail().HTTPCode)
+
+	// 解析bizCode的Code字段为int类型
+	var codeValue int
+	if bizCode.BizDetail().Code == "OK" {
+		codeValue = 0
+	} else {
+		// 其他错误情况设置为对应的错误码，这里统一设置为-1，如有需要可以细化
+		codeValue = -1
+	}
+
 	r.Response.WriteJsonExit(response{
-		Code:    bizCode.BizDetail().Code,
+		Code:    codeValue,
 		Message: msg,
 		TraceID: gctx.CtxId(r.Context()),
 		Data:    res,
