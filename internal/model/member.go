@@ -30,7 +30,7 @@ type MemberInfo struct {
 	Name         string      // 真实姓名
 	Avatar       string      // 头像
 	Grade        string      // 年级
-	JoinYear     int         // 入会年份
+	JoinYear     string      // 入会年份
 	Department   string      // 所属部门
 	Position     string      // 职位
 	Skills       string      // 技能描述
@@ -55,7 +55,7 @@ type MemberDetailOutput struct {
 type MemberCreateInput struct {
 	UserId       uint   // 用户ID
 	Grade        string // 年级
-	JoinYear     int    // 入会年份
+	JoinYear     string // 入会年份
 	Department   string // 所属部门
 	Position     string // 职位
 	Skills       string // 技能描述
