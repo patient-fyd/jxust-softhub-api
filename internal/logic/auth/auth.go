@@ -39,6 +39,19 @@ func init() {
 	service.RegisterAuth(New())
 }
 
+// GetLoginUserId 获取当前登录用户ID
+func (s *sAuth) GetLoginUserId(ctx context.Context) uint {
+	value := ctx.Value("userId")
+	if value == nil {
+		return 0
+	}
+	userId, ok := value.(uint)
+	if !ok {
+		return 0
+	}
+	return userId
+}
+
 // Register 用户注册
 func (s *sAuth) Register(ctx context.Context, in model.UserRegisterInput) (*model.UserRegisterOutput, error) {
 	// 检查用户名是否已存在

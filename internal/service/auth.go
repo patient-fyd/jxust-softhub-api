@@ -19,6 +19,9 @@ type IAuth interface {
 
 	// RefreshToken 刷新Token
 	RefreshToken(ctx context.Context, in model.RefreshTokenInput) (*model.RefreshTokenOutput, error)
+
+	// GetLoginUserId 获取当前登录用户ID
+	GetLoginUserId(ctx context.Context) uint
 }
 
 var (

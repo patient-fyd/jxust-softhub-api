@@ -16,6 +16,12 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/member"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/stat"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/tag"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/user"
+
+	// 确保auth/user逻辑包被导入并执行其init函数
+	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/auth"
+	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/user"
+
 	"github.com/patient-fyd/jxust-softhub-api/internal/service"
 	"github.com/patient-fyd/jxust-softhub-api/utility"
 )
@@ -89,6 +95,7 @@ var (
 			s.Use(
 				service.Middleware().TraceID,
 				service.Middleware().AccessUser,
+				service.Middleware().AuthMiddleware,
 				service.Middleware().ResponseHandler,
 			)
 			s.Group("/v1", func(group *ghttp.RouterGroup) {
@@ -125,6 +132,11 @@ var (
 				// 注册系统配置相关接口
 				group.Bind(
 					configCtrl.NewV1(),
+				)
+
+				// 注册用户相关接口
+				group.Bind(
+					user.NewV1(),
 				)
 			})
 			s.Run()

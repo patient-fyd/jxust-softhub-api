@@ -12,6 +12,7 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/api/member"
 	"github.com/patient-fyd/jxust-softhub-api/api/stat"
 	"github.com/patient-fyd/jxust-softhub-api/api/tag"
+	"github.com/patient-fyd/jxust-softhub-api/api/user"
 )
 
 type IClient interface {
@@ -23,4 +24,5 @@ type IClient interface {
 	MemberV1() member.IMemberV1
 	StatV1() stat.IStatV1
 	TagV1() tag.ITagV1
+	UserV1() user.IUserV1
 }
