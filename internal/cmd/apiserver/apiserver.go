@@ -10,6 +10,7 @@ import (
 	"github.com/gogf/gf/v2/os/glog"
 
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/auth"
+	configCtrl "github.com/patient-fyd/jxust-softhub-api/internal/controller/config"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/file"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/join"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/member"
@@ -123,7 +124,7 @@ var (
 
 				// 注册系统配置相关接口
 				group.Bind(
-					config.NewV1(),
+					configCtrl.NewV1(),
 				)
 			})
 			s.Run()
