@@ -6,7 +6,7 @@ import (
 
 // ApplyReq 提交入会申请请求
 type ApplyReq struct {
-	g.Meta           `path:"/api/join/apply" method:"post" tags:"JoinService" summary:"提交入会申请"`
+	g.Meta           `path:"/api/join/v1/apply" method:"post" tags:"JoinService" summary:"提交入会申请"`
 	Name             string `p:"name" v:"required#申请人姓名不能为空"`
 	StudentId        string `p:"studentId" v:"required#学号不能为空"`
 	Grade            string `p:"grade" v:"required#年级不能为空"`
@@ -26,7 +26,7 @@ type ApplyRes struct {
 
 // ListReq 入会申请列表请求
 type ListReq struct {
-	g.Meta           `path:"/api/join/list" method:"get" tags:"JoinService" summary:"获取入会申请列表"`
+	g.Meta           `path:"/api/join/v1/list" method:"get" tags:"JoinService" summary:"获取入会申请列表"`
 	Status           int    `p:"status" dc:"申请状态筛选"`
 	Grade            string `p:"grade" dc:"年级筛选"`
 	ExpectDepartment string `p:"expectDepartment" dc:"期望部门筛选"`
@@ -66,7 +66,7 @@ type ApplicationInfo struct {
 
 // DetailReq 申请详情请求
 type DetailReq struct {
-	g.Meta        `path:"/api/join/detail" method:"get" tags:"JoinService" summary:"获取入会申请详情"`
+	g.Meta        `path:"/api/join/v1/detail" method:"get" tags:"JoinService" summary:"获取入会申请详情"`
 	ApplicationId uint `p:"applicationId" v:"required#申请ID不能为空"`
 }
 
@@ -77,7 +77,7 @@ type DetailRes struct {
 
 // ReviewReq 审核入会申请请求
 type ReviewReq struct {
-	g.Meta        `path:"/api/join/review" method:"post" tags:"JoinService" summary:"审核入会申请"`
+	g.Meta        `path:"/api/join/v1/review" method:"post" tags:"JoinService" summary:"审核入会申请"`
 	ApplicationId uint   `p:"applicationId" v:"required#申请ID不能为空"`
 	Status        int    `p:"status" v:"required|in:1,2#审核状态不能为空|审核状态只能为通过或拒绝"`
 	ReviewComment string `p:"reviewComment"`
@@ -85,3 +85,22 @@ type ReviewReq struct {
 
 // ReviewRes 审核入会申请响应
 type ReviewRes struct{}
+
+// ApplicationListReq 获取入会申请列表请求（符合API文档路径）
+type ApplicationListReq struct {
+	g.Meta           `path:"/api/join/v1/application-list" method:"get" tags:"JoinService" summary:"获取入会申请列表"`
+	Status           int    `p:"status" dc:"申请状态筛选"`
+	Grade            string `p:"grade" dc:"年级筛选"`
+	ExpectDepartment string `p:"expectDepartment" dc:"期望部门筛选"`
+	// 分页参数
+	Page     int `p:"page" v:"min:0#分页号码错误" dc:"分页号码, 默认1"`
+	PageSize int `p:"pageSize" v:"max:500#每页数量最大500条" dc:"分页数量, 最大500"`
+}
+
+// ApplicationListRes 获取入会申请列表响应
+type ApplicationListRes struct {
+	List     []ApplicationInfo `json:"list"`     // 申请列表
+	Total    int               `json:"total"`    // 总数
+	Page     int               `json:"page"`     // 当前页码
+	PageSize int               `json:"pageSize"` // 每页数量
+}

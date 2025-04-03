@@ -14,6 +14,7 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/file"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/join"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/member"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/openapi"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/stat"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/tag"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/user"
@@ -99,7 +100,16 @@ var (
 				service.Middleware().AuthMiddleware,
 				service.Middleware().ResponseHandler,
 			)
-			s.Group("/v1", func(group *ghttp.RouterGroup) {
+
+			// 注册OpenAPI文档接口，不需要鉴权
+			s.Group("/", func(group *ghttp.RouterGroup) {
+				group.GET("/openapi.json", openapi.New().GetOpenAPIDoc)
+			})
+
+			// 注册静态文件服务
+			s.AddStaticPath("/swagger", "public/swagger")
+
+			s.Group("/", func(group *ghttp.RouterGroup) {
 				// 注册认证相关接口
 				group.Bind(
 					auth.NewV1(),

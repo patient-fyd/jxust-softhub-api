@@ -81,3 +81,20 @@ type JoinReviewInput struct {
 
 // JoinReviewOutput 审核入会申请输出
 type JoinReviewOutput struct{}
+
+// JoinApplicationListInput 入会申请列表查询输入（API文档中的路径）
+type JoinApplicationListInput struct {
+	Status           int    // 申请状态筛选
+	Grade            string // 年级筛选
+	ExpectDepartment string // 期望部门筛选
+	Page             int    // 分页号码
+	PageSize         int    // 分页数量
+}
+
+// JoinApplicationListOutput 入会申请列表查询输出（API文档中的路径）
+type JoinApplicationListOutput struct {
+	List     []*JoinApplicationInfo // 申请列表
+	Total    int                    // 总数
+	Page     int                    // 当前页码
+	PageSize int                    // 每页数量
+}

@@ -37,3 +37,8 @@ func (i *implementerUserV1) List(ctx context.Context, req *v1.ListReq) (res *v1.
 	return
 }
 
+func (i *implementerUserV1) AssignRole(ctx context.Context, req *v1.AssignRoleReq) (res *v1.AssignRoleRes, err error) {
+	err = i.Request(ctx, req, &res)
+	return
+}
+

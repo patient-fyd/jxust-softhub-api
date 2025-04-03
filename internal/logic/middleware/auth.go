@@ -102,12 +102,15 @@ func (s *sMiddleware) AuthMiddleware(r *ghttp.Request) {
 func isPublicPath(path string) bool {
 	// 定义公开路径列表
 	publicPaths := []string{
-		"/v1/api/auth/login",
-		"/v1/api/auth/register",
-		"/v1/api/auth/admin/login",
-		"/v1/api/auth/refresh",
-		"/v1/api.json",
-		"/v1/swagger",
+		"/api/auth/v1/login",
+		"/api/auth/v1/register",
+		"/api/auth/v1/admin/login",
+		"/api/auth/v1/refresh",
+		"/api.json",
+		"/swagger",
+		"/openapi.json", // 自定义OpenAPI文档路径
+		"/swagger",      // Swagger UI路径
+		"/api.json",     // GoFrame默认OpenAPI文档路径
 	}
 
 	for _, p := range publicPaths {

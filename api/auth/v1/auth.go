@@ -6,7 +6,7 @@ import (
 
 // RegisterReq 用户注册请求
 type RegisterReq struct {
-	g.Meta   `path:"/api/auth/register" method:"post" tags:"AuthService" summary:"用户注册"`
+	g.Meta   `path:"/api/auth/v1/register" method:"post" tags:"AuthService" summary:"用户注册"`
 	UserName string `p:"userName" v:"required#用户名不能为空"`
 	Password string `p:"password" v:"required|length:6,30#密码不能为空|密码长度应当在6到30之间"`
 	Name     string `p:"name" v:"required#姓名不能为空"`
@@ -21,7 +21,7 @@ type RegisterRes struct {
 
 // LoginReq 用户登录请求
 type LoginReq struct {
-	g.Meta   `path:"/api/auth/login" method:"post" tags:"AuthService" summary:"用户登录"`
+	g.Meta   `path:"/api/auth/v1/login" method:"post" tags:"AuthService" summary:"用户登录"`
 	UserName string `p:"userName" v:"required#用户名不能为空"`
 	Password string `p:"password" v:"required#密码不能为空"`
 }
@@ -42,7 +42,7 @@ type UserInfo struct {
 
 // AdminLoginReq 管理员登录请求
 type AdminLoginReq struct {
-	g.Meta   `path:"/api/auth/admin/login" method:"post" tags:"AuthService" summary:"终极管理员登录"`
+	g.Meta   `path:"/api/auth/v1/admin/login" method:"post" tags:"AuthService" summary:"终极管理员登录"`
 	UserName string `p:"userName" v:"required#用户名不能为空"`
 	Password string `p:"password" v:"required#密码不能为空"`
 }
@@ -55,7 +55,7 @@ type AdminLoginRes struct {
 
 // RefreshTokenReq 刷新Token请求
 type RefreshTokenReq struct {
-	g.Meta `path:"/api/auth/refresh" method:"post" tags:"AuthService" summary:"刷新Token"`
+	g.Meta `path:"/api/auth/v1/refresh" method:"post" tags:"AuthService" summary:"刷新Token"`
 	Token  string `p:"token" v:"required#Token不能为空"`
 }
 

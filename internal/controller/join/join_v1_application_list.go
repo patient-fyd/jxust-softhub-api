@@ -8,13 +8,13 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/internal/service"
 )
 
-func (c *ControllerV1) List(ctx context.Context, req *v1.ListReq) (res *v1.ListRes, err error) {
+func (c *ControllerV1) ApplicationList(ctx context.Context, req *v1.ApplicationListReq) (res *v1.ApplicationListRes, err error) {
 	// 调用服务层方法获取申请列表
-	result, err := service.Join().List(ctx, model.JoinListInput{
+	result, err := service.Join().ApplicationList(ctx, model.JoinApplicationListInput{
 		Status:           req.Status,
 		Grade:            req.Grade,
 		ExpectDepartment: req.ExpectDepartment,
-		PageNum:          req.PageNum,
+		Page:             req.Page,
 		PageSize:         req.PageSize,
 	})
 	if err != nil {
@@ -22,10 +22,10 @@ func (c *ControllerV1) List(ctx context.Context, req *v1.ListReq) (res *v1.ListR
 	}
 
 	// 构造响应数据
-	res = &v1.ListRes{
+	res = &v1.ApplicationListRes{
 		List:     make([]v1.ApplicationInfo, 0, len(result.List)),
 		Total:    result.Total,
-		PageNum:  result.PageNum,
+		Page:     result.Page,
 		PageSize: result.PageSize,
 	}
 

@@ -19,6 +19,9 @@ type IJoin interface {
 
 	// Review 审核入会申请
 	Review(ctx context.Context, in model.JoinReviewInput) (*model.JoinReviewOutput, error)
+
+	// ApplicationList 获取入会申请列表（API文档中的路径）
+	ApplicationList(ctx context.Context, in model.JoinApplicationListInput) (*model.JoinApplicationListOutput, error)
 }
 
 var (

@@ -24,9 +24,17 @@ type response struct {
 func (s *sMiddleware) ResponseHandler(r *ghttp.Request) {
 	r.Middleware.Next()
 
-	// For /swagger
-	if r.Request.URL.Path == "/api.json" {
-		return
+	// 跳过以下路径的响应处理
+	skipPaths := []string{
+		"/api.json",
+		"/swagger",
+		"/openapi.json",
+	}
+
+	for _, path := range skipPaths {
+		if strings.HasPrefix(r.Request.URL.Path, path) {
+			return
+		}
 	}
 
 	// For PProf

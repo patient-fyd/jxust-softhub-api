@@ -47,3 +47,8 @@ func (i *implementerJoinV1) Review(ctx context.Context, req *v1.ReviewReq) (res 
 	return
 }
 
+func (i *implementerJoinV1) ApplicationList(ctx context.Context, req *v1.ApplicationListReq) (res *v1.ApplicationListRes, err error) {
+	err = i.Request(ctx, req, &res)
+	return
+}
+
