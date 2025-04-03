@@ -70,3 +70,4 @@ type DownloadReq struct {
 }
 
 // DownloadRes 下载文件响应 - 此处不需要定义，框架会自动处理文件下载响应
+type DownloadRes struct{}

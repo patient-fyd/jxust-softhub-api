@@ -41,22 +41,22 @@ func (s *sMember) List(ctx context.Context, in model.MemberListInput) (*model.Me
 	}
 
 	// 构建查询条件
-	model := dao.Members.Ctx(ctx)
+	modelQuery := dao.Members.Ctx(ctx)
 	if in.Department != "" {
-		model = model.Where("department", in.Department)
+		modelQuery = modelQuery.Where("department", in.Department)
 	}
 	if in.Grade != "" {
-		model = model.Where("grade", in.Grade)
+		modelQuery = modelQuery.Where("grade", in.Grade)
 	}
 	if in.IsCore > 0 {
-		model = model.Where("is_core", in.IsCore)
+		modelQuery = modelQuery.Where("is_core", in.IsCore)
 	}
 	if in.Status > 0 {
-		model = model.Where("status", in.Status)
+		modelQuery = modelQuery.Where("status", in.Status)
 	}
 
 	// 查询总数
-	total, err := model.Count()
+	total, err := modelQuery.Count()
 	if err != nil {
 		g.Log().Error(ctx, "Query members count error:", err)
 		return nil, gerror.Wrap(err, "获取成员总数失败")
@@ -73,7 +73,7 @@ func (s *sMember) List(ctx context.Context, in model.MemberListInput) (*model.Me
 
 	// 查询分页数据
 	var members []*entity.Members
-	err = model.Page(in.PageNum, in.PageSize).OrderDesc("create_time").Scan(&members)
+	err = modelQuery.Page(in.PageNum, in.PageSize).OrderDesc("create_time").Scan(&members)
 	if err != nil {
 		g.Log().Error(ctx, "Query members error:", err)
 		return nil, gerror.Wrap(err, "获取成员列表失败")
