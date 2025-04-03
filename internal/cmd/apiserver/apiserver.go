@@ -14,6 +14,7 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/file"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/join"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/member"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/news"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/openapi"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/stat"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/tag"
@@ -22,6 +23,7 @@ import (
 	// 确保auth/user逻辑包被导入并执行其init函数
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/auth"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/join"
+	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/news"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/user"
 
 	"github.com/patient-fyd/jxust-softhub-api/internal/service"
@@ -128,6 +130,11 @@ var (
 				// 注册文件管理相关接口
 				group.Bind(
 					file.NewV1(),
+				)
+
+				// 注册新闻管理相关接口
+				group.Bind(
+					news.NewV1(),
 				)
 
 				// 注册统计分析相关接口

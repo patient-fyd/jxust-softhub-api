@@ -13,6 +13,7 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/api/stat"
 	"github.com/patient-fyd/jxust-softhub-api/api/tag"
 	"github.com/patient-fyd/jxust-softhub-api/api/user"
+	"github.com/patient-fyd/jxust-softhub-api/api/news"
 )
 
 type IClient interface {
@@ -25,4 +26,5 @@ type IClient interface {
 	StatV1() stat.IStatV1
 	TagV1() tag.ITagV1
 	UserV1() user.IUserV1
+	NewsV1() news.INewsV1
 }
