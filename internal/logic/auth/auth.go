@@ -164,9 +164,9 @@ func (s *sAuth) AdminLogin(ctx context.Context, in model.AdminLoginInput) (*mode
 		return nil, gerror.NewCode(codes.CodeValidationFailed, "用户名或密码错误")
 	}
 
-	// 检查是否为管理员
-	if user.RoleId < 1 {
-		return nil, gerror.NewCode(codes.CodeNotAuthorized, "无管理员权限")
+	// 检查是否为超级管理员（角色ID为1）
+	if user.RoleId != 1 {
+		return nil, gerror.NewCode(codes.CodeNotAuthorized, "无超级管理员权限")
 	}
 
 	// 生成Token

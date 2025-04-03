@@ -42,7 +42,7 @@ type UserInfo struct {
 
 // AdminLoginReq 管理员登录请求
 type AdminLoginReq struct {
-	g.Meta   `path:"/api/auth/admin/login" method:"post" tags:"AuthService" summary:"管理员登录"`
+	g.Meta   `path:"/api/auth/admin/login" method:"post" tags:"AuthService" summary:"终极管理员登录"`
 	UserName string `p:"userName" v:"required#用户名不能为空"`
 	Password string `p:"password" v:"required#密码不能为空"`
 }
