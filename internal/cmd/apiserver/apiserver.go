@@ -20,6 +20,7 @@ import (
 
 	// 确保auth/user逻辑包被导入并执行其init函数
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/auth"
+	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/join"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/user"
 
 	"github.com/patient-fyd/jxust-softhub-api/internal/service"
