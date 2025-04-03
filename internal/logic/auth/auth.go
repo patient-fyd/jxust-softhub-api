@@ -79,7 +79,7 @@ func (s *sAuth) Register(ctx context.Context, in model.UserRegisterInput) (*mode
 		Name:     in.Name,
 		Email:    in.Email,
 		Phone:    in.Phone,
-		RoleId:   0, // 默认为普通用户
+		RoleId:   4, // 默认为普通学生，角色ID为4
 	}).Insert()
 	if err != nil {
 		g.Log().Error(ctx, "Insert user error:", err)
@@ -97,7 +97,7 @@ func (s *sAuth) Register(ctx context.Context, in model.UserRegisterInput) (*mode
 		UserId:   uint(userId),
 		UserName: in.UserName,
 		Name:     in.Name,
-		RoleId:   0, // 默认为普通用户
+		RoleId:   4, // 默认为普通学生，角色ID为4
 	}, nil
 }
 
