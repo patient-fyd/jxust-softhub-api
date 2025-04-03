@@ -1,48 +1,66 @@
 package model
 
-// RegisterInput 用户注册输入参数
-type RegisterInput struct {
+import (
+	"github.com/gogf/gf/v2/os/gtime"
+)
+
+// UserRegisterInput 用户注册输入
+type UserRegisterInput struct {
 	UserName string // 用户名
 	Password string // 密码
 	Name     string // 真实姓名
-	Email    string // 邮箱
-	Phone    string // 手机号
+	Email    string // 电子邮箱
+	Phone    string // 联系电话
 }
 
-// RegisterOutput 用户注册输出参数
-type RegisterOutput struct {
-	UserId     uint   // 用户ID
-	UserName   string // 用户名
-	CreateTime string // 创建时间
-}
-
-// LoginInput 用户登录输入参数
-type LoginInput struct {
-	UserName string // 用户名
-	Password string // 密码
-}
-
-// LoginOutput 用户登录输出参数
-type LoginOutput struct {
-	Token string     // JWT令牌
-	User  *LoginUser // 用户信息
-}
-
-// LoginUser 登录用户信息
-type LoginUser struct {
+// UserRegisterOutput 用户注册输出
+type UserRegisterOutput struct {
 	UserId   uint   // 用户ID
 	UserName string // 用户名
 	Name     string // 真实姓名
+	RoleId   uint   // 角色ID
 }
 
-// TokenRefreshInput 刷新Token输入参数
-type TokenRefreshInput struct {
-	Token string // JWT令牌
+// UserLoginInput 用户登录输入
+type UserLoginInput struct {
+	UserName string // 用户名
+	Password string // 密码
 }
 
-// TokenRefreshOutput 刷新Token输出参数
-type TokenRefreshOutput struct {
-	Token string // 新的JWT令牌
+// UserLoginOutput 用户登录输出
+type UserLoginOutput struct {
+	Token     string      // JWT Token
+	UserId    uint        // 用户ID
+	UserName  string      // 用户名
+	Name      string      // 真实姓名
+	RoleId    uint        // 角色ID
+	LoginTime *gtime.Time // 登录时间
+}
+
+// AdminLoginInput 管理员登录输入
+type AdminLoginInput struct {
+	UserName string // 用户名
+	Password string // 密码
+}
+
+// AdminLoginOutput 管理员登录输出
+type AdminLoginOutput struct {
+	Token     string      // JWT Token
+	UserId    uint        // 用户ID
+	UserName  string      // 用户名
+	Name      string      // 真实姓名
+	RoleId    uint        // 角色ID
+	LoginTime *gtime.Time // 登录时间
+}
+
+// RefreshTokenInput 刷新Token输入
+type RefreshTokenInput struct {
+	Token string // 原Token
+}
+
+// RefreshTokenOutput 刷新Token输出
+type RefreshTokenOutput struct {
+	Token string // 新Token
 }
 
 // UserRoleEnum 用户角色枚举

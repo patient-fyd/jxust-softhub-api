@@ -37,6 +37,11 @@ func (i *implementerAuthV1) Login(ctx context.Context, req *v1.LoginReq) (res *v
 	return
 }
 
+func (i *implementerAuthV1) AdminLogin(ctx context.Context, req *v1.AdminLoginReq) (res *v1.AdminLoginRes, err error) {
+	err = i.Request(ctx, req, &res)
+	return
+}
+
 func (i *implementerAuthV1) RefreshToken(ctx context.Context, req *v1.RefreshTokenReq) (res *v1.RefreshTokenRes, err error) {
 	err = i.Request(ctx, req, &res)
 	return

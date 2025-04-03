@@ -9,19 +9,16 @@ import (
 )
 
 func (c *ControllerV1) RefreshToken(ctx context.Context, req *v1.RefreshTokenReq) (res *v1.RefreshTokenRes, err error) {
-	// 1. 转换请求参数
-	refreshInput := model.TokenRefreshInput{
+	// 调用业务层Token刷新服务
+	output, err := service.Auth().RefreshToken(ctx, model.RefreshTokenInput{
 		Token: req.Token,
-	}
-
-	// 2. 调用服务层处理Token刷新
-	refreshOutput, err := service.Auth().RefreshToken(ctx, refreshInput)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	// 3. 构造响应结果
+	// 返回结果
 	return &v1.RefreshTokenRes{
-		Token: refreshOutput.Token,
+		Token: output.Token,
 	}, nil
 }

@@ -8,21 +8,19 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/internal/service"
 )
 
-func (c *ControllerV1) Register(ctx context.Context, req *v1.RegisterReq) (res *v1.RegisterRes, err error) {
-	// 调用业务层注册服务
-	output, err := service.Auth().Register(ctx, model.UserRegisterInput{
+func (c *ControllerV1) AdminLogin(ctx context.Context, req *v1.AdminLoginReq) (res *v1.AdminLoginRes, err error) {
+	// 调用业务层管理员登录服务
+	output, err := service.Auth().AdminLogin(ctx, model.AdminLoginInput{
 		UserName: req.UserName,
 		Password: req.Password,
-		Name:     req.Name,
-		Email:    req.Email,
-		Phone:    req.Phone,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	// 返回结果
-	return &v1.RegisterRes{
+	return &v1.AdminLoginRes{
+		Token: output.Token,
 		User: &v1.UserInfo{
 			UserId:   output.UserId,
 			UserName: output.UserName,

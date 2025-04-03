@@ -121,3 +121,10 @@ redis:
     pass:
     maxConnLifetime: 30m
     idleTimeout: 10m
+
+# JWT配置
+jwt:
+  # JWT密钥
+  secret: "jxust-softhub-api-secret-key"
+  # JWT过期时间，单位秒，默认8小时
+  expire: 28800

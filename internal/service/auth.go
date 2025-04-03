@@ -8,9 +8,17 @@ import (
 
 // IAuth 认证服务接口
 type IAuth interface {
-	Register(ctx context.Context, in model.RegisterInput) (*model.RegisterOutput, error)
-	Login(ctx context.Context, in model.LoginInput) (*model.LoginOutput, error)
-	RefreshToken(ctx context.Context, in model.TokenRefreshInput) (*model.TokenRefreshOutput, error)
+	// Register 用户注册
+	Register(ctx context.Context, in model.UserRegisterInput) (*model.UserRegisterOutput, error)
+
+	// Login 用户登录
+	Login(ctx context.Context, in model.UserLoginInput) (*model.UserLoginOutput, error)
+
+	// AdminLogin 管理员登录
+	AdminLogin(ctx context.Context, in model.AdminLoginInput) (*model.AdminLoginOutput, error)
+
+	// RefreshToken 刷新Token
+	RefreshToken(ctx context.Context, in model.RefreshTokenInput) (*model.RefreshTokenOutput, error)
 }
 
 var (
