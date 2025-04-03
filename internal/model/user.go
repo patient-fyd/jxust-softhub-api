@@ -28,3 +28,14 @@ type UserListOutput struct {
 	PageNum  int               // 页码
 	PageSize int               // 每页数量
 }
+
+// 用户角色分配输入参数
+type UserAssignRoleInput struct {
+	UserId uint // 用户ID
+	RoleId uint // 角色ID
+}
+
+// 用户角色分配输出参数
+type UserAssignRoleOutput struct {
+	Success bool // 是否成功
+}

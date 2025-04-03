@@ -52,3 +52,15 @@ type UserInfo struct {
 	CreatedAt string `json:"createdAt"` // 创建时间
 	UpdatedAt string `json:"updatedAt"` // 更新时间
 }
+
+// 添加用户角色分配相关的API定义
+type AssignRoleReq struct {
+	g.Meta `path:"/user/{userId}/role" method:"put" tags:"UserService" summary:"分配用户角色"`
+	UserId uint `v:"required|min:1" json:"userId" in:"path" dc:"用户ID"`
+	RoleId uint `v:"required|min:1" json:"roleId" dc:"角色ID"`
+}
+
+type AssignRoleRes struct {
+	g.Meta  `mime:"application/json"`
+	Success bool `json:"success" dc:"是否成功"`
+}

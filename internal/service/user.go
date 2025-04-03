@@ -13,6 +13,9 @@ type IUser interface {
 
 	// GetUserList 获取用户列表
 	GetUserList(ctx context.Context, in model.UserListInput) (*model.UserListOutput, error)
+
+	// AssignRole 分配用户角色
+	AssignRole(ctx context.Context, in model.UserAssignRoleInput) (*model.UserAssignRoleOutput, error)
 }
 
 var (

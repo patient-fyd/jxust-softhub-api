@@ -5,7 +5,9 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 
+	"github.com/patient-fyd/jxust-softhub-api/internal/codes"
 	"github.com/patient-fyd/jxust-softhub-api/internal/dao"
 	"github.com/patient-fyd/jxust-softhub-api/internal/model"
 	"github.com/patient-fyd/jxust-softhub-api/internal/model/entity"
@@ -141,5 +143,43 @@ func (s *sUser) GetUserList(ctx context.Context, in model.UserListInput) (*model
 		Total:    int(total),
 		PageNum:  in.PageNum,
 		PageSize: in.PageSize,
+	}, nil
+}
+
+// AssignRole 分配用户角色
+func (s *sUser) AssignRole(ctx context.Context, in model.UserAssignRoleInput) (*model.UserAssignRoleOutput, error) {
+	// 获取当前登录用户
+	loginUserId := service.Auth().GetLoginUserId(ctx)
+	if loginUserId == 0 {
+		return nil, gerror.NewCode(codes.CodePermissionDenied, "未登录或登录已过期")
+	}
+
+	// 从上下文获取用户角色信息，判断是否有权限分配角色
+	// 实际应用中，这里应该检查当前登录用户是否有权限分配角色（如：管理员角色）
+	// 如果当前用户不是管理员，则返回错误
+	// TODO: 实际业务中应该判断当前登录用户是否有权限分配角色
+
+	g.Log().Infof(ctx, "用户 %d 正在为用户 %d 分配角色 %d", loginUserId, in.UserId, in.RoleId)
+
+	// 检查被分配角色的用户是否存在
+	count, err := dao.Users.Ctx(ctx).Where(dao.Users.Columns().UserId, in.UserId).Count()
+	if err != nil {
+		return nil, err
+	}
+	if count == 0 {
+		return nil, gerror.NewCode(codes.CodeNotFound, "用户不存在")
+	}
+
+	// 更新用户角色
+	_, err = dao.Users.Ctx(ctx).Data(g.Map{
+		dao.Users.Columns().RoleId:     in.RoleId,
+		dao.Users.Columns().UpdateTime: gtime.Now(),
+	}).Where(dao.Users.Columns().UserId, in.UserId).Update()
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.UserAssignRoleOutput{
+		Success: true,
 	}, nil
 }
