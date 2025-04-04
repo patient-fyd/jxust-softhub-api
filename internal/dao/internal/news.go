@@ -24,6 +24,7 @@ type NewsColumns struct {
 	Title      string // 新闻标题
 	Content    string // 新闻内容，支持 Markdown 格式
 	Category   string // 新闻分类，如协会新闻、技术分享、赛事通知等
+	NewsType   string // 新闻类型：1-协会通知，2-技术分享
 	CoverImage string // 封面图片的URL
 	AuthorId   string // 作者ID，关联 users 表
 	ViewCount  string // 浏览次数
@@ -38,6 +39,7 @@ var newsColumns = NewsColumns{
 	Title:      "title",
 	Content:    "content",
 	Category:   "category",
+	NewsType:   "newsType",
 	CoverImage: "coverImage",
 	AuthorId:   "authorId",
 	ViewCount:  "viewCount",

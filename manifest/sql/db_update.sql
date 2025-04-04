@@ -107,4 +107,20 @@ CREATE TABLE system_configs (
     description VARCHAR(255) DEFAULT NULL COMMENT '配置说明',
     createTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updateTime DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='存储系统配置参数'; 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='存储系统配置参数';
+
+-- =====================================================
+-- 21. 修改news表，添加newsType字段
+ALTER TABLE news ADD COLUMN newsType TINYINT(1) DEFAULT 1 COMMENT '新闻类型：1-协会通知，2-技术分享' AFTER category;
+
+-- =====================================================
+-- 22. 添加新闻发布相关权限
+INSERT INTO permissions (permissionId, permissionKey, description) VALUES 
+(5, 'publish_tech_article', '发布技术文章的权限'),
+(6, 'publish_association_notice', '发布协会通知的权限');
+
+-- 默认将publish_tech_article权限分配给协会成员角色
+-- 将publish_association_notice权限分配给内容管理员角色
+INSERT INTO role_permissions (roleId, permissionId) VALUES
+(2, 6), -- 内容管理员(roleId=2)拥有发布协会通知的权限(permissionId=6)
+(3, 5); -- 协会成员(roleId=3)拥有发布技术分享的权限(permissionId=5) 

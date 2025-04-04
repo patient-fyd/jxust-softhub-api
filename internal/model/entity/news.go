@@ -14,6 +14,7 @@ type News struct {
 	Title      string      `json:"title"       description:"新闻标题"`
 	Content    string      `json:"content"     description:"新闻内容，支持 Markdown 格式"`
 	Category   string      `json:"category"    description:"新闻分类，如协会新闻、技术分享、赛事通知等"`
+	NewsType   int         `json:"news_type"   description:"新闻类型：1-协会通知，2-技术分享"`
 	CoverImage string      `json:"cover_image" description:"封面图片的URL"`
 	AuthorId   uint        `json:"author_id"   description:"作者ID，关联 users 表"`
 	ViewCount  int         `json:"view_count"  description:"浏览次数"`

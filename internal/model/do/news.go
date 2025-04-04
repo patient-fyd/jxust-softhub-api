@@ -16,6 +16,7 @@ type News struct {
 	Title      interface{} // 新闻标题
 	Content    interface{} // 新闻内容，支持 Markdown 格式
 	Category   interface{} // 新闻分类，如协会新闻、技术分享、赛事通知等
+	NewsType   interface{} // 新闻类型：1-协会通知，2-技术分享
 	CoverImage interface{} // 封面图片的URL
 	AuthorId   interface{} // 作者ID，关联 users 表
 	ViewCount  interface{} // 浏览次数

@@ -8,6 +8,7 @@ import (
 type ListReq struct {
 	g.Meta   `path:"/api/news/v1/list" method:"get" tags:"NewsService" summary:"获取新闻列表"`
 	Category string `p:"category" dc:"新闻分类"`
+	NewsType uint8  `p:"newsType" dc:"新闻类型：1-协会通知，2-技术分享"`
 	Page     int    `p:"page" v:"min:0#分页号码错误" dc:"分页号码, 默认1"`
 	PageSize int    `p:"pageSize" v:"max:500#每页数量最大500条" dc:"分页数量, 最大500"`
 }
@@ -25,6 +26,7 @@ type NewsInfo struct {
 	Id         uint   `json:"id"`         // 新闻ID
 	Title      string `json:"title"`      // 新闻标题
 	Category   string `json:"category"`   // 新闻分类
+	NewsType   uint8  `json:"newsType"`   // 新闻类型：1-协会通知，2-技术分享
 	CoverImage string `json:"coverImage"` // 封面图片URL
 	ViewCount  uint   `json:"viewCount"`  // 查看次数
 	IsTop      uint8  `json:"isTop"`      // 是否置顶：0-否，1-是
@@ -45,6 +47,7 @@ type DetailRes struct {
 	Title      string `json:"title"`      // 新闻标题
 	Content    string `json:"content"`    // 新闻内容
 	Category   string `json:"category"`   // 新闻分类
+	NewsType   uint8  `json:"newsType"`   // 新闻类型：1-协会通知，2-技术分享
 	CoverImage string `json:"coverImage"` // 封面图片URL
 	ViewCount  uint   `json:"viewCount"`  // 查看次数
 	IsTop      uint8  `json:"isTop"`      // 是否置顶：0-否，1-是
@@ -59,6 +62,7 @@ type CreateReq struct {
 	Title      string `p:"title" v:"required#新闻标题不能为空"`
 	Content    string `p:"content" v:"required#新闻内容不能为空"`
 	Category   string `p:"category" v:"required#新闻分类不能为空"`
+	NewsType   uint8  `p:"newsType" v:"required|in:1,2#新闻类型不能为空|新闻类型只能是1或2" dc:"新闻类型：1-协会通知，2-技术分享"`
 	CoverImage string `p:"coverImage"`
 	IsTop      uint8  `p:"isTop" v:"in:0,1#是否置顶参数错误"`
 	Status     uint8  `p:"status" v:"in:0,1,2#状态参数错误"`
@@ -76,6 +80,7 @@ type UpdateReq struct {
 	Title      string `p:"title"`
 	Content    string `p:"content"`
 	Category   string `p:"category"`
+	NewsType   uint8  `p:"newsType" v:"in:1,2#新闻类型只能是1或2" dc:"新闻类型：1-协会通知，2-技术分享"`
 	CoverImage string `p:"coverImage"`
 	IsTop      uint8  `p:"isTop" v:"in:0,1#是否置顶参数错误"`
 	Status     uint8  `p:"status" v:"in:0,1,2#状态参数错误"`

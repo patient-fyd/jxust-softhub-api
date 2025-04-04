@@ -3,6 +3,7 @@ package model
 // NewsListInput 获取新闻列表的输入参数
 type NewsListInput struct {
 	Category string // 新闻分类
+	NewsType uint8  // 新闻类型：1-协会通知，2-技术分享
 	Page     int    // 页码
 	PageSize int    // 每页数量
 }
@@ -20,6 +21,7 @@ type NewsInfo struct {
 	Id         uint   // 新闻ID
 	Title      string // 新闻标题
 	Category   string // 新闻分类
+	NewsType   uint8  // 新闻类型：1-协会通知，2-技术分享
 	CoverImage string // 封面图片URL
 	ViewCount  uint   // 查看次数
 	IsTop      uint8  // 是否置顶：0-否，1-是
@@ -39,6 +41,7 @@ type NewsDetailOutput struct {
 	Title      string // 新闻标题
 	Content    string // 新闻内容
 	Category   string // 新闻分类
+	NewsType   uint8  // 新闻类型：1-协会通知，2-技术分享
 	CoverImage string // 封面图片URL
 	ViewCount  uint   // 查看次数
 	IsTop      uint8  // 是否置顶：0-否，1-是
@@ -52,6 +55,7 @@ type NewsCreateInput struct {
 	Title      string // 新闻标题
 	Content    string // 新闻内容
 	Category   string // 新闻分类
+	NewsType   uint8  // 新闻类型：1-协会通知，2-技术分享
 	CoverImage string // 封面图片URL
 	IsTop      uint8  // 是否置顶：0-否，1-是
 	Status     uint8  // 状态：0-草稿，1-已发布，2-已下架
@@ -68,6 +72,7 @@ type NewsUpdateInput struct {
 	Title      string // 新闻标题
 	Content    string // 新闻内容
 	Category   string // 新闻分类
+	NewsType   uint8  // 新闻类型：1-协会通知，2-技术分享
 	CoverImage string // 封面图片URL
 	IsTop      uint8  // 是否置顶：0-否，1-是
 	Status     uint8  // 状态：0-草稿，1-已发布，2-已下架
