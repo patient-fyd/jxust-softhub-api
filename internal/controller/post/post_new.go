@@ -2,16 +2,15 @@
 // Code generated and maintained by GoFrame CLI tool. DO NOT EDIT. 
 // =================================================================================
 
-package like
+package post
 
 import (
-	"context"
-	
-	"github.com/patient-fyd/jxust-softhub-api/api/like/v1"
+	"github.com/patient-fyd/jxust-softhub-api/api/post"
 )
 
-type ILikeV1 interface {
-	Toggle(ctx context.Context, req *v1.ToggleReq) (res *v1.ToggleRes, err error)
-}
+type ControllerV1 struct{}
 
+func NewV1() post.IPostV1 {
+	return &ControllerV1{}
+}
 

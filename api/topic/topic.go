@@ -11,6 +11,7 @@ import (
 )
 
 type ITopicV1 interface {
-	// 获取话题列表
 	List(ctx context.Context, req *v1.ListReq) (res *v1.ListRes, err error)
-} 
+}
+
+

@@ -14,6 +14,12 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/api/tag"
 	"github.com/patient-fyd/jxust-softhub-api/api/user"
 	"github.com/patient-fyd/jxust-softhub-api/api/news"
+	"github.com/patient-fyd/jxust-softhub-api/api/circle"
+	"github.com/patient-fyd/jxust-softhub-api/api/comment"
+	"github.com/patient-fyd/jxust-softhub-api/api/follow"
+	"github.com/patient-fyd/jxust-softhub-api/api/like"
+	"github.com/patient-fyd/jxust-softhub-api/api/post"
+	"github.com/patient-fyd/jxust-softhub-api/api/topic"
 )
 
 type IClient interface {
@@ -27,4 +33,10 @@ type IClient interface {
 	TagV1() tag.ITagV1
 	UserV1() user.IUserV1
 	NewsV1() news.INewsV1
+	CircleV1() circle.ICircleV1
+	CommentV1() comment.ICommentV1
+	FollowV1() follow.IFollowV1
+	LikeV1() like.ILikeV1
+	PostV1() post.IPostV1
+	TopicV1() topic.ITopicV1
 }
