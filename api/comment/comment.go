@@ -11,9 +11,9 @@ import (
 )
 
 type ICommentV1 interface {
-	List(ctx context.Context, req *v1.ListReq) (res *v1.ListRes, err error)
-	Create(ctx context.Context, req *v1.CreateReq) (res *v1.CreateRes, err error)
-	Delete(ctx context.Context, req *v1.DeleteReq) (res *v1.DeleteRes, err error)
+	CommentList(ctx context.Context, req *v1.CommentListReq) (res *v1.CommentListRes, err error)
+	CommentCreate(ctx context.Context, req *v1.CommentCreateReq) (res *v1.CommentCreateRes, err error)
+	CommentDelete(ctx context.Context, req *v1.CommentDeleteReq) (res *v1.CommentDeleteRes, err error)
 }
 
 

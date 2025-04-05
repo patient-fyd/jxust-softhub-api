@@ -10,12 +10,15 @@ import (
 	"github.com/gogf/gf/v2/os/glog"
 
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/auth"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/comment"
 	configCtrl "github.com/patient-fyd/jxust-softhub-api/internal/controller/config"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/file"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/follow"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/join"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/like"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/member"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/news"
-	"github.com/patient-fyd/jxust-softhub-api/internal/controller/openapi"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/post"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/stat"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/tag"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/user"
@@ -105,13 +108,6 @@ var (
 
 			// 注册OpenAPI文档接口，不需要鉴权
 			s.Group("/", func(group *ghttp.RouterGroup) {
-				group.GET("/openapi.json", openapi.New().GetOpenAPIDoc)
-			})
-
-			// 注册静态文件服务
-			s.AddStaticPath("/swagger", "public/swagger")
-
-			s.Group("/", func(group *ghttp.RouterGroup) {
 				// 注册认证相关接口
 				group.Bind(
 					auth.NewV1(),
@@ -156,7 +152,28 @@ var (
 				group.Bind(
 					user.NewV1(),
 				)
+
+				// 注册帖子相关接口
+				group.Bind(
+					post.NewV1(),
+				)
+
+				// 注册评论相关接口
+				group.Bind(
+					comment.NewV1(),
+				)
+
+				// 注册点赞相关接口
+				group.Bind(
+					like.NewV1(),
+				)
+
+				// 注册关注相关接口
+				group.Bind(
+					follow.NewV1(),
+				)
 			})
+
 			s.Run()
 			return nil
 		},

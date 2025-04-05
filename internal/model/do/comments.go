@@ -18,4 +18,5 @@ type Comments struct {
 	UserId      interface{} // 评论用户ID，关联 users 表
 	Content     interface{} // 评论内容
 	CreateTime  *gtime.Time // 记录创建时间
+	LikeCount   interface{} // 点赞数
 }

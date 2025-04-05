@@ -27,7 +27,7 @@ func (i *implementer) FollowV1() follow.IFollowV1 {
 	return &implementerFollowV1{client}
 }
 
-func (i *implementerFollowV1) Toggle(ctx context.Context, req *v1.ToggleReq) (res *v1.ToggleRes, err error) {
+func (i *implementerFollowV1) FollowToggle(ctx context.Context, req *v1.FollowToggleReq) (res *v1.FollowToggleRes, err error) {
 	err = i.Request(ctx, req, &res)
 	return
 }

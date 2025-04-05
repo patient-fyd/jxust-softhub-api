@@ -85,3 +85,17 @@ type ClaimsUser struct {
 	UserName string       `json:"uname"` // 用户名
 	RoleId   UserRoleEnum `json:"rid"`   // 角色ID
 }
+
+// ClaimsOutput JWT解析结果
+type ClaimsOutput struct {
+	UserId    uint   `json:"userId"`
+	UserName  string `json:"userName"`
+	Name      string `json:"name"`
+	RoleId    uint   `json:"roleId"`
+	ExpiresAt int64  `json:"expiresAt"`
+}
+
+// CodeInput 验证码输入
+type CodeInput struct {
+	Code string `json:"code" v:"required#验证码不能为空"`
+}

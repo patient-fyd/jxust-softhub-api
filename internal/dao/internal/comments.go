@@ -26,6 +26,7 @@ type CommentsColumns struct {
 	UserId      string // 评论用户ID，关联 users 表
 	Content     string // 评论内容
 	CreateTime  string // 记录创建时间
+	LikeCount   string // 点赞数
 }
 
 // commentsColumns holds the columns for table comments.
@@ -36,6 +37,7 @@ var commentsColumns = CommentsColumns{
 	UserId:      "userId",
 	Content:     "content",
 	CreateTime:  "createTime",
+	LikeCount:   "likeCount",
 }
 
 // NewCommentsDao creates and returns a new DAO object for table data access.

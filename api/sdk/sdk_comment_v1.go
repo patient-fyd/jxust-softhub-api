@@ -27,17 +27,17 @@ func (i *implementer) CommentV1() comment.ICommentV1 {
 	return &implementerCommentV1{client}
 }
 
-func (i *implementerCommentV1) List(ctx context.Context, req *v1.ListReq) (res *v1.ListRes, err error) {
+func (i *implementerCommentV1) CommentList(ctx context.Context, req *v1.CommentListReq) (res *v1.CommentListRes, err error) {
 	err = i.Request(ctx, req, &res)
 	return
 }
 
-func (i *implementerCommentV1) Create(ctx context.Context, req *v1.CreateReq) (res *v1.CreateRes, err error) {
+func (i *implementerCommentV1) CommentCreate(ctx context.Context, req *v1.CommentCreateReq) (res *v1.CommentCreateRes, err error) {
 	err = i.Request(ctx, req, &res)
 	return
 }
 
-func (i *implementerCommentV1) Delete(ctx context.Context, req *v1.DeleteReq) (res *v1.DeleteRes, err error) {
+func (i *implementerCommentV1) CommentDelete(ctx context.Context, req *v1.CommentDeleteReq) (res *v1.CommentDeleteRes, err error) {
 	err = i.Request(ctx, req, &res)
 	return
 }

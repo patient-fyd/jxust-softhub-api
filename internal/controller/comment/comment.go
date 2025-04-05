@@ -4,3 +4,39 @@
 
 package comment
 
+import (
+	"context"
+
+	"github.com/gogf/gf/v2/errors/gerror"
+
+	"github.com/patient-fyd/jxust-softhub-api/internal/model"
+	"github.com/patient-fyd/jxust-softhub-api/internal/service"
+)
+
+// 评论API控制器
+type Controller struct{}
+
+// List 获取评论列表
+func (c *Controller) List(ctx context.Context, req *model.CommentListInput) (res *model.CommentListOutput, err error) {
+	return service.Comment().List(ctx, *req)
+}
+
+// Create 创建评论
+func (c *Controller) Create(ctx context.Context, req *model.CommentCreateInput) (res *model.CommentCreateOutput, err error) {
+	// 判断用户是否登录
+	if !service.Auth().LoginState(ctx) {
+		return nil, gerror.New("用户未登录")
+	}
+
+	return service.Comment().Create(ctx, *req)
+}
+
+// Delete 删除评论
+func (c *Controller) Delete(ctx context.Context, req *model.CommentDeleteInput) (res *model.CommentDeleteOutput, err error) {
+	// 判断用户是否登录
+	if !service.Auth().LoginState(ctx) {
+		return nil, gerror.New("用户未登录")
+	}
+
+	return service.Comment().Delete(ctx, *req)
+}

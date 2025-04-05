@@ -106,8 +106,11 @@ func isPublicPath(path string) bool {
 		"/api/auth/v1/register",
 		"/api/auth/v1/admin/login",
 		"/api/auth/v1/refresh",
-		"/api/news/v1/list",   // 新闻列表接口
-		"/api/news/v1/detail", // 新闻详情接口
+		"/api/news/v1/list",    // 新闻列表接口
+		"/api/news/v1/detail",  // 新闻详情接口
+		"/api/post/v1/list",    // 帖子列表接口
+		"/api/post/v1/detail",  // 帖子详情接口
+		"/api/comment/v1/list", // 评论列表接口
 		"/api.json",
 		"/swagger",
 		"/openapi.json", // 自定义OpenAPI文档路径

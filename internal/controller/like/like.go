@@ -4,3 +4,24 @@
 
 package like
 
+import (
+	"context"
+
+	"github.com/gogf/gf/v2/errors/gerror"
+
+	"github.com/patient-fyd/jxust-softhub-api/internal/model"
+	"github.com/patient-fyd/jxust-softhub-api/internal/service"
+)
+
+// 点赞API控制器
+type Controller struct{}
+
+// Toggle 点赞/取消点赞
+func (c *Controller) Toggle(ctx context.Context, req *model.LikeToggleReq) (res *model.LikeToggleOutput, err error) {
+	// 判断用户是否登录
+	if !service.Auth().LoginState(ctx) {
+		return nil, gerror.New("用户未登录")
+	}
+
+	return service.Like().Toggle(ctx, *req)
+}

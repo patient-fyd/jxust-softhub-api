@@ -157,4 +157,44 @@ BEGIN
         UPDATE users SET followingCount = followingCount - 1 WHERE userId = OLD.userId AND followingCount > 0;
     END IF;
 END//
-DELIMITER ; 
+DELIMITER ;
+
+-- 为评论表添加点赞数字段
+ALTER TABLE comments ADD COLUMN likeCount INT UNSIGNED DEFAULT 0 COMMENT '点赞数';
+
+-- 评论表
+CREATE TABLE IF NOT EXISTS `comments` (
+  `commentId` int unsigned NOT NULL AUTO_INCREMENT COMMENT '评论ID',
+  `contentType` varchar(20) NOT NULL COMMENT '内容类型(post:帖子)',
+  `contentId` int unsigned NOT NULL COMMENT '内容ID',
+  `userId` int unsigned NOT NULL COMMENT '用户ID',
+  `content` text NOT NULL COMMENT '评论内容',
+  `createTime` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`commentId`),
+  KEY `idx_contentType_contentId` (`contentType`,`contentId`),
+  KEY `idx_userId` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评论表';
+
+-- 点赞表
+CREATE TABLE IF NOT EXISTS `likes` (
+  `likeId` int unsigned NOT NULL AUTO_INCREMENT COMMENT '点赞ID',
+  `userId` int unsigned NOT NULL COMMENT '用户ID',
+  `targetId` int unsigned NOT NULL COMMENT '目标ID',
+  `targetType` tinyint unsigned NOT NULL COMMENT '目标类型(1:帖子,2:评论)',
+  `createTime` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`likeId`),
+  UNIQUE KEY `uk_userId_targetId_targetType` (`userId`,`targetId`,`targetType`),
+  KEY `idx_targetId_targetType` (`targetId`,`targetType`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='点赞表';
+
+-- 关注表
+CREATE TABLE IF NOT EXISTS `follows` (
+  `followId` int unsigned NOT NULL AUTO_INCREMENT COMMENT '关注ID',
+  `userId` int unsigned NOT NULL COMMENT '用户ID',
+  `followedId` int unsigned NOT NULL COMMENT '被关注对象ID',
+  `followType` tinyint unsigned NOT NULL COMMENT '关注类型(1:用户,2:圈子)',
+  `createTime` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`followId`),
+  UNIQUE KEY `uk_userId_followedId_followType` (`userId`,`followedId`,`followType`),
+  KEY `idx_followedId_followType` (`followedId`,`followType`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='关注表'; 

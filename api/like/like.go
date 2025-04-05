@@ -11,7 +11,7 @@ import (
 )
 
 type ILikeV1 interface {
-	Toggle(ctx context.Context, req *v1.ToggleReq) (res *v1.ToggleRes, err error)
+	LikeToggle(ctx context.Context, req *v1.LikeToggleReq) (res *v1.LikeToggleRes, err error)
 }
 
 

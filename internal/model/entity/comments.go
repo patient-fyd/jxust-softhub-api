@@ -16,4 +16,5 @@ type Comments struct {
 	UserId      uint        `json:"user_id"      description:"评论用户ID，关联 users 表"`
 	Content     string      `json:"content"      description:"评论内容"`
 	CreateTime  *gtime.Time `json:"create_time"  description:"记录创建时间"`
+	LikeCount   uint        `json:"like_count"   description:"点赞数"`
 }
