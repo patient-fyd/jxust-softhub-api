@@ -20,32 +20,36 @@ type UsersDao struct {
 
 // UsersColumns defines and stores column names for table users.
 type UsersColumns struct {
-	UserId     string // 用户ID，主键，自增
-	UserName   string // 用户名，登录和显示名称
-	Password   string // 用户密码，存储加密后的密码
-	Name       string // 真实姓名
-	RoleId     string // 角色ID，关联 roles 表，标识用户所属角色
-	Avatar     string // 用户头像图片URL
-	JoinYear   string // 入会年份，格式如2025
-	Email      string // 用户邮箱
-	Phone      string // 用户联系电话
-	CreateTime string // 记录创建时间
-	UpdateTime string // 记录最后更新时间
+	UserId         string // 用户ID，主键，自增
+	UserName       string // 用户名，登录和显示名称
+	Password       string // 用户密码，存储加密后的密码
+	Name           string // 真实姓名
+	RoleId         string // 角色ID，关联 roles 表，标识用户所属角色
+	Avatar         string // 用户头像图片URL
+	JoinYear       string // 入会年份，格式如2025
+	Email          string // 用户邮箱
+	Phone          string // 用户联系电话
+	CreateTime     string // 记录创建时间
+	UpdateTime     string // 记录最后更新时间
+	FollowerCount  string // 粉丝数量
+	FollowingCount string // 关注数量
 }
 
 // usersColumns holds the columns for table users.
 var usersColumns = UsersColumns{
-	UserId:     "userId",
-	UserName:   "userName",
-	Password:   "password",
-	Name:       "name",
-	RoleId:     "roleId",
-	Avatar:     "avatar",
-	JoinYear:   "joinYear",
-	Email:      "email",
-	Phone:      "phone",
-	CreateTime: "createTime",
-	UpdateTime: "updateTime",
+	UserId:         "userId",
+	UserName:       "userName",
+	Password:       "password",
+	Name:           "name",
+	RoleId:         "roleId",
+	Avatar:         "avatar",
+	JoinYear:       "joinYear",
+	Email:          "email",
+	Phone:          "phone",
+	CreateTime:     "createTime",
+	UpdateTime:     "updateTime",
+	FollowerCount:  "followerCount",
+	FollowingCount: "followingCount",
 }
 
 // NewUsersDao creates and returns a new DAO object for table data access.

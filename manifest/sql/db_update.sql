@@ -123,4 +123,38 @@ INSERT INTO permissions (permissionId, permissionKey, description) VALUES
 -- 将publish_association_notice权限分配给内容管理员角色
 INSERT INTO role_permissions (roleId, permissionId) VALUES
 (2, 6), -- 内容管理员(roleId=2)拥有发布协会通知的权限(permissionId=6)
-(3, 5); -- 协会成员(roleId=3)拥有发布技术分享的权限(permissionId=5) 
+(3, 5); -- 协会成员(roleId=3)拥有发布技术分享的权限(permissionId=5)
+
+-- 为用户表添加粉丝数量和关注数量字段
+ALTER TABLE users
+ADD COLUMN followerCount INT UNSIGNED DEFAULT 0 COMMENT '粉丝数量',
+ADD COLUMN followingCount INT UNSIGNED DEFAULT 0 COMMENT '关注数量';
+
+-- 创建更新用户关注计数的触发器
+DELIMITER //
+CREATE TRIGGER after_follow_insert
+AFTER INSERT ON follows
+FOR EACH ROW
+BEGIN
+    -- 如果是关注用户类型(followType=1)
+    IF NEW.followType = 1 THEN
+        -- 增加被关注用户的粉丝数
+        UPDATE users SET followerCount = followerCount + 1 WHERE userId = NEW.followedId;
+        -- 增加关注者的关注数
+        UPDATE users SET followingCount = followingCount + 1 WHERE userId = NEW.userId;
+    END IF;
+END//
+
+CREATE TRIGGER after_follow_delete
+AFTER DELETE ON follows
+FOR EACH ROW
+BEGIN
+    -- 如果是关注用户类型(followType=1)
+    IF OLD.followType = 1 THEN
+        -- 减少被关注用户的粉丝数
+        UPDATE users SET followerCount = followerCount - 1 WHERE userId = OLD.followedId AND followerCount > 0;
+        -- 减少关注者的关注数
+        UPDATE users SET followingCount = followingCount - 1 WHERE userId = OLD.userId AND followingCount > 0;
+    END IF;
+END//
+DELIMITER ; 
