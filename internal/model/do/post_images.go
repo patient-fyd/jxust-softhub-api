@@ -9,9 +9,9 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
-// PostImages is the golang structure of table postImages for DAO operations like Where/Data.
+// PostImages is the golang structure of table post_images for DAO operations like Where/Data.
 type PostImages struct {
-	g.Meta     `orm:"table:postImages, do:true"`
+	g.Meta     `orm:"table:post_images, do:true"`
 	ImageId    interface{} // 图片ID
 	PostId     interface{} // 帖子ID
 	ImageUrl   interface{} // 图片URL

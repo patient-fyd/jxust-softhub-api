@@ -11,14 +11,14 @@ import (
 // internalPostImagesDao is internal type for wrapping internal DAO implements.
 type internalPostImagesDao = *internal.PostImagesDao
 
-// postImagesDao is the data access object for table postImages.
+// postImagesDao is the data access object for table post_images.
 // You can define custom methods on it to extend its functionality as you wish.
 type postImagesDao struct {
 	internalPostImagesDao
 }
 
 var (
-	// PostImages is globally public accessible object for table postImages operations.
+	// PostImages is globally public accessible object for table post_images operations.
 	PostImages = postImagesDao{
 		internal.NewPostImagesDao(),
 	}

@@ -154,10 +154,16 @@ func (s *sUser) AssignRole(ctx context.Context, in model.UserAssignRoleInput) (*
 		return nil, gerror.NewCode(codes.CodePermissionDenied, "未登录或登录已过期")
 	}
 
-	// 从上下文获取用户角色信息，判断是否有权限分配角色
-	// 实际应用中，这里应该检查当前登录用户是否有权限分配角色（如：管理员角色）
-	// 如果当前用户不是管理员，则返回错误
-	// TODO: 实际业务中应该判断当前登录用户是否有权限分配角色
+	// 查询当前登录用户角色
+	var currentUser *entity.Users
+	err := dao.Users.Ctx(ctx).Where(dao.Users.Columns().UserId, loginUserId).Scan(&currentUser)
+	if err != nil || currentUser == nil {
+		return nil, gerror.NewCode(codes.CodeInternal, "获取当前用户信息失败")
+	}
+	// 假设角色ID为1表示超级管理员
+	if currentUser.RoleId != 1 {
+		return nil, gerror.NewCode(codes.CodePermissionDenied, "只有超级管理员才能分配角色")
+	}
 
 	g.Log().Infof(ctx, "用户 %d 正在为用户 %d 分配角色 %d", loginUserId, in.UserId, in.RoleId)
 

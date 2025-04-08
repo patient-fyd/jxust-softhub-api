@@ -197,4 +197,114 @@ CREATE TABLE IF NOT EXISTS `follows` (
   PRIMARY KEY (`followId`),
   UNIQUE KEY `uk_userId_followedId_followType` (`userId`,`followedId`,`followType`),
   KEY `idx_followedId_followType` (`followedId`,`followType`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='关注表'; 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='关注表';
+
+-- 帖子表
+CREATE TABLE IF NOT EXISTS `posts` (
+  `postId` int unsigned NOT NULL AUTO_INCREMENT COMMENT '帖子ID',
+  `userId` int unsigned NOT NULL COMMENT '用户ID',
+  `content` text NOT NULL COMMENT '帖子内容',
+  `circleId` int unsigned DEFAULT 0 COMMENT '圈子ID',
+  `topicId` int unsigned DEFAULT 0 COMMENT '话题ID',
+  `viewCount` int unsigned DEFAULT 0 COMMENT '浏览量',
+  `likeCount` int unsigned DEFAULT 0 COMMENT '点赞数',
+  `commentCount` int unsigned DEFAULT 0 COMMENT '评论数',
+  `shareCount` int unsigned DEFAULT 0 COMMENT '分享数',
+  `isTop` tinyint unsigned DEFAULT 0 COMMENT '是否置顶(0:否,1:是)',
+  `status` tinyint unsigned DEFAULT 1 COMMENT '状态(1:已发布,2:已删除)',
+  `createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`postId`),
+  KEY `idx_userId` (`userId`),
+  KEY `idx_circleId` (`circleId`),
+  KEY `idx_topicId` (`topicId`),
+  KEY `idx_createTime` (`createTime`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='帖子表';
+
+-- 帖子图片表
+CREATE TABLE IF NOT EXISTS `post_images` (
+  `imageId` int unsigned NOT NULL AUTO_INCREMENT COMMENT '图片ID',
+  `postId` int unsigned NOT NULL COMMENT '帖子ID',
+  `imageUrl` varchar(255) NOT NULL COMMENT '图片URL',
+  `sortOrder` tinyint unsigned DEFAULT 0 COMMENT '排序顺序',
+  `createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`imageId`),
+  KEY `idx_postId` (`postId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='帖子图片表';
+
+-- 圈子表
+CREATE TABLE IF NOT EXISTS `circles` (
+  `circleId` int unsigned NOT NULL AUTO_INCREMENT COMMENT '圈子ID',
+  `circleName` varchar(50) NOT NULL COMMENT '圈子名称',
+  `description` varchar(255) DEFAULT NULL COMMENT '圈子描述',
+  `coverImage` varchar(255) DEFAULT NULL COMMENT '封面图片',
+  `creatorId` int unsigned NOT NULL COMMENT '创建者ID',
+  `memberCount` int unsigned DEFAULT 0 COMMENT '成员数量',
+  `postCount` int unsigned DEFAULT 0 COMMENT '帖子数量',
+  `status` tinyint unsigned DEFAULT 1 COMMENT '状态(1:正常,2:禁用)',
+  `createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`circleId`),
+  UNIQUE KEY `uk_circleName` (`circleName`),
+  KEY `idx_creatorId` (`creatorId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='圈子表';
+
+-- 话题表
+CREATE TABLE IF NOT EXISTS `topics` (
+  `topicId` int unsigned NOT NULL AUTO_INCREMENT COMMENT '话题ID',
+  `topicName` varchar(50) NOT NULL COMMENT '话题名称',
+  `description` varchar(255) DEFAULT NULL COMMENT '话题描述',
+  `coverImage` varchar(255) DEFAULT NULL COMMENT '封面图片',
+  `creatorId` int unsigned NOT NULL COMMENT '创建者ID',
+  `postCount` int unsigned DEFAULT 0 COMMENT '帖子数量',
+  `status` tinyint unsigned DEFAULT 1 COMMENT '状态(1:正常,2:禁用)',
+  `createTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updateTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`topicId`),
+  UNIQUE KEY `uk_topicName` (`topicName`),
+  KEY `idx_creatorId` (`creatorId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='话题表';
+
+-- 点赞数更新触发器
+DELIMITER //
+CREATE TRIGGER after_like_insert_post
+AFTER INSERT ON likes
+FOR EACH ROW
+BEGIN
+    IF NEW.targetType = 1 THEN  -- 帖子点赞
+        UPDATE posts SET likeCount = likeCount + 1 WHERE postId = NEW.targetId;
+    ELSEIF NEW.targetType = 2 THEN  -- 评论点赞
+        UPDATE comments SET likeCount = likeCount + 1 WHERE commentId = NEW.targetId;
+    END IF;
+END//
+
+CREATE TRIGGER after_like_delete_post
+AFTER DELETE ON likes
+FOR EACH ROW
+BEGIN
+    IF OLD.targetType = 1 THEN  -- 帖子点赞
+        UPDATE posts SET likeCount = likeCount - 1 WHERE postId = OLD.targetId AND likeCount > 0;
+    ELSEIF OLD.targetType = 2 THEN  -- 评论点赞
+        UPDATE comments SET likeCount = likeCount - 1 WHERE commentId = OLD.targetId AND likeCount > 0;
+    END IF;
+END//
+
+-- 评论数更新触发器
+CREATE TRIGGER after_comment_insert
+AFTER INSERT ON comments
+FOR EACH ROW
+BEGIN
+    IF NEW.contentType = 'post' THEN  -- 帖子评论
+        UPDATE posts SET commentCount = commentCount + 1 WHERE postId = NEW.contentId;
+    END IF;
+END//
+
+CREATE TRIGGER after_comment_delete
+AFTER DELETE ON comments
+FOR EACH ROW
+BEGIN
+    IF OLD.contentType = 'post' THEN  -- 帖子评论
+        UPDATE posts SET commentCount = commentCount - 1 WHERE postId = OLD.contentId AND commentCount > 0;
+    END IF;
+END//
+DELIMITER ; 

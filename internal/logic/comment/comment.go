@@ -211,20 +211,22 @@ func (s *sComment) Create(ctx context.Context, in model.CommentCreateInput) (*mo
 
 // filterSensitiveWords 过滤敏感词
 func (s *sComment) filterSensitiveWords(ctx context.Context, content string) (string, bool) {
-	// TODO: 实现敏感词过滤功能
-	// 方案1: 使用本地敏感词库，采用DFA(确定有限自动机)算法实现高效过滤
-	// 方案2: 使用Redis存储敏感词库，使用Lua脚本实现过滤
-	// 方案3: 调用第三方内容审核API
+	redis := g.Redis()
 
-	// 示例实现：简单替换一些敏感词（实际应用中应使用更完善的敏感词库和算法）
-	sensitiveWords := []string{"傻逼", "操", "草", "fuck", "shit", "dick"}
+	// 从 Redis 获取敏感词列表
+	sensitiveWords, err := redis.SMembers(ctx, "sensitive_words")
+	if err != nil {
+		g.Log().Error(ctx, "获取敏感词列表失败:", err)
+		return content, false
+	}
+
 	filteredContent := content
 	hasSensitiveWord := false
 
 	for _, word := range sensitiveWords {
-		if strings.Contains(filteredContent, word) {
+		if strings.Contains(filteredContent, word.String()) {
 			hasSensitiveWord = true
-			filteredContent = strings.ReplaceAll(filteredContent, word, "***")
+			filteredContent = strings.ReplaceAll(filteredContent, word.String(), "***")
 		}
 	}
 

@@ -13,6 +13,7 @@ import (
 type ICircleV1 interface {
 	List(ctx context.Context, req *v1.ListReq) (res *v1.ListRes, err error)
 	Detail(ctx context.Context, req *v1.DetailReq) (res *v1.DetailRes, err error)
+	Join(ctx context.Context, req *v1.JoinReq) (res *v1.JoinRes, err error)
 }
 
 

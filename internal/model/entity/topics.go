@@ -11,7 +11,7 @@ import (
 // Topics is the golang structure for table topics.
 type Topics struct {
 	TopicId     uint        `json:"topic_id"    description:"话题ID"`
-	Name        string      `json:"name"        description:"话题名称"`
+	TopicName   string      `json:"topic_name"  description:"话题名称"`
 	Description string      `json:"description" description:"话题描述"`
 	Icon        string      `json:"icon"        description:"话题图标"`
 	PostCount   uint        `json:"post_count"  description:"帖子数"`

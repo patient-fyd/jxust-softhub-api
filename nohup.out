@@ -1,0 +1,5 @@
+2025-04-06 11:14:48.202 [DEBU] {103cc90b429c3318269847545fa552ec} /Users/fyd/jxust-softhub/jxust-softhub-api/internal/cmd/apiserver/apiserver.go:99: use config file: config
+2025-04-06 11:14:48.210 [FATA] net.Listen address ":9000" failed: listen tcp :9000: bind: address already in use
+1. net.Listen address ":9000" failed
+2. listen tcp :9000: bind: address already in use
+

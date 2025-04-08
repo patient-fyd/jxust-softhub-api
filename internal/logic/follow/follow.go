@@ -2,11 +2,13 @@ package follow
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/v2/util/gconv"
 
 	"github.com/patient-fyd/jxust-softhub-api/internal/dao"
 	"github.com/patient-fyd/jxust-softhub-api/internal/model"
@@ -143,10 +145,16 @@ func (s *sFollow) Toggle(ctx context.Context, in model.FollowToggleReq) (*model.
 		}
 
 		// TODO: 如果需要用Redis实现热门用户或圈子推荐，可以在这里更新Redis数据
-		// 使用Redis的有序集合(Sorted Set)存储热门用户或圈子，以粉丝数作为分值
-		// 示例代码:
-		// key := fmt.Sprintf("hot_following:%s", in.FollowType)
-		// redis.ZIncrBy(key, 1 或 -1, in.FollowedId)
+		redis := g.Redis()
+		key := fmt.Sprintf("hot_following:%d", in.FollowType)
+		score := float64(1)
+		if !isFollowed {
+			score = -1
+		}
+		_, err = redis.ZIncrBy(ctx, key, score, gconv.String(in.FollowedId))
+		if err != nil {
+			g.Log().Errorf(ctx, "更新 Redis 热门关注对象失败: %v", err)
+		}
 
 		return nil
 	})

@@ -13,7 +13,7 @@ import (
 type Circles struct {
 	g.Meta      `orm:"table:circles, do:true"`
 	CircleId    interface{} // 圈子ID
-	Name        interface{} // 圈子名称
+	CircleName  interface{} // 圈子名称
 	Description interface{} // 圈子描述
 	Icon        interface{} // 圈子图标
 	UserId      interface{} // 创建者ID

@@ -2,11 +2,13 @@ package like
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/v2/util/gconv"
 
 	"github.com/patient-fyd/jxust-softhub-api/internal/dao"
 	"github.com/patient-fyd/jxust-softhub-api/internal/model"
@@ -151,11 +153,17 @@ func (s *sLike) Toggle(ctx context.Context, in model.LikeToggleReq) (*model.Like
 			}
 		}
 
-		// TODO: 如果需要用Redis实现热门内容排序，可以在这里更新Redis中的排序数据
-		// 使用Redis的有序集合(Sorted Set)存储热门内容，以点赞数作为分值
-		// 示例代码:
-		// key := fmt.Sprintf("hot:%s", in.TargetType)
-		// redis.ZIncrBy(key, 1 或 -1, in.TargetId)
+		// 更新 Redis 热门排序
+		redis := g.Redis()
+		key := fmt.Sprintf("hot:%d", in.TargetType)
+		score := float64(1)
+		if !isLiked {
+			score = -1
+		}
+		_, err = redis.ZIncrBy(ctx, key, score, gconv.String(in.TargetId))
+		if err != nil {
+			g.Log().Errorf(ctx, "更新 Redis 热门排序失败: %v", err)
+		}
 
 		return nil
 	})

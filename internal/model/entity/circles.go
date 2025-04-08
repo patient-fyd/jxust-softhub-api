@@ -11,7 +11,7 @@ import (
 // Circles is the golang structure for table circles.
 type Circles struct {
 	CircleId    uint        `json:"circle_id"    description:"圈子ID"`
-	Name        string      `json:"name"         description:"圈子名称"`
+	CircleName  string      `json:"circle_name"  description:"圈子名称"`
 	Description string      `json:"description"  description:"圈子描述"`
 	Icon        string      `json:"icon"         description:"圈子图标"`
 	UserId      uint        `json:"user_id"      description:"创建者ID"`

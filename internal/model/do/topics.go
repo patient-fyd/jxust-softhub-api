@@ -13,7 +13,7 @@ import (
 type Topics struct {
 	g.Meta      `orm:"table:topics, do:true"`
 	TopicId     interface{} // 话题ID
-	Name        interface{} // 话题名称
+	TopicName   interface{} // 话题名称
 	Description interface{} // 话题描述
 	Icon        interface{} // 话题图标
 	PostCount   interface{} // 帖子数

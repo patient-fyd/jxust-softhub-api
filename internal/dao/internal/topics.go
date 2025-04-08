@@ -21,7 +21,7 @@ type TopicsDao struct {
 // TopicsColumns defines and stores column names for table topics.
 type TopicsColumns struct {
 	TopicId     string // 话题ID
-	Name        string // 话题名称
+	TopicName   string // 话题名称
 	Description string // 话题描述
 	Icon        string // 话题图标
 	PostCount   string // 帖子数
@@ -34,7 +34,7 @@ type TopicsColumns struct {
 // topicsColumns holds the columns for table topics.
 var topicsColumns = TopicsColumns{
 	TopicId:     "topicId",
-	Name:        "name",
+	TopicName:   "topicName",
 	Description: "description",
 	Icon:        "icon",
 	PostCount:   "postCount",

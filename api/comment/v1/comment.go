@@ -8,7 +8,7 @@ import (
 
 // CommentListReq 获取评论列表请求
 type CommentListReq struct {
-	g.Meta      `path:"/list" method:"get" tags:"评论管理" summary:"获取评论列表"`
+	g.Meta      `path:"/api/comment/v1/list" method:"get" tags:"评论管理" summary:"获取评论列表"`
 	ContentType string `json:"contentType" v:"required#内容类型不能为空"` // 内容类型: post:帖子
 	ContentId   int    `json:"contentId" v:"required#内容ID不能为空"`   // 内容ID
 	Page        int    `json:"page" d:"1"`                        // 页码
@@ -25,7 +25,7 @@ type CommentListRes struct {
 
 // CommentCreateReq 创建评论请求
 type CommentCreateReq struct {
-	g.Meta      `path:"/create" method:"post" tags:"评论管理" summary:"创建评论"`
+	g.Meta      `path:"/api/comment/v1/create" method:"post" tags:"评论管理" summary:"创建评论"`
 	ContentType string `json:"contentType" v:"required#内容类型不能为空"` // 内容类型: post:帖子
 	ContentId   int    `json:"contentId" v:"required#内容ID不能为空"`   // 内容ID
 	Content     string `json:"content" v:"required#评论内容不能为空"`     // 评论内容
@@ -38,7 +38,7 @@ type CommentCreateRes struct {
 
 // CommentDeleteReq 删除评论请求
 type CommentDeleteReq struct {
-	g.Meta    `path:"/delete" method:"post" tags:"评论管理" summary:"删除评论"`
+	g.Meta    `path:"/api/comment/v1/delete" method:"post" tags:"评论管理" summary:"删除评论"`
 	CommentId int `json:"commentId" v:"required#评论ID不能为空"` // 评论ID
 }
 

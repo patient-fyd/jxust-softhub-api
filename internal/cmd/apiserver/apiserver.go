@@ -10,6 +10,7 @@ import (
 	"github.com/gogf/gf/v2/os/glog"
 
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/auth"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/circle"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/comment"
 	configCtrl "github.com/patient-fyd/jxust-softhub-api/internal/controller/config"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/file"
@@ -25,6 +26,7 @@ import (
 
 	// 确保auth/user逻辑包被导入并执行其init函数
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/auth"
+	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/circle"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/join"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/news"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/user"
@@ -171,6 +173,11 @@ var (
 				// 注册关注相关接口
 				group.Bind(
 					follow.NewV1(),
+				)
+
+				// 注册圈子相关接口
+				group.Bind(
+					circle.NewV1(),
 				)
 			})
 

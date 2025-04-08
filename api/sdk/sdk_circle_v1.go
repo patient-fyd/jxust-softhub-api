@@ -37,3 +37,7 @@ func (i *implementerCircleV1) Detail(ctx context.Context, req *v1.DetailReq) (re
 	return
 }
 
+func (i *implementerCircleV1) Join(ctx context.Context, req *v1.JoinReq) (res *v1.JoinRes, err error) {
+	err = i.Request(ctx, req, &res)
+	return
+}

@@ -8,7 +8,7 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
-// PostImages is the golang structure for table postImages.
+// PostImages is the golang structure for table post_images.
 type PostImages struct {
 	ImageId    uint        `json:"image_id"    description:"图片ID"`
 	PostId     uint        `json:"post_id"     description:"帖子ID"`

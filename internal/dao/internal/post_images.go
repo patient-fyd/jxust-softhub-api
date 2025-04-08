@@ -11,14 +11,14 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-// PostImagesDao is the data access object for table postImages.
+// PostImagesDao is the data access object for table post_images.
 type PostImagesDao struct {
 	table   string            // table is the underlying table name of the DAO.
 	group   string            // group is the database configuration group name of current DAO.
 	columns PostImagesColumns // columns contains all the column names of Table for convenient usage.
 }
 
-// PostImagesColumns defines and stores column names for table postImages.
+// PostImagesColumns defines and stores column names for table post_images.
 type PostImagesColumns struct {
 	ImageId    string // 图片ID
 	PostId     string // 帖子ID
@@ -27,7 +27,7 @@ type PostImagesColumns struct {
 	CreateTime string // 创建时间
 }
 
-// postImagesColumns holds the columns for table postImages.
+// postImagesColumns holds the columns for table post_images.
 var postImagesColumns = PostImagesColumns{
 	ImageId:    "imageId",
 	PostId:     "postId",
@@ -40,7 +40,7 @@ var postImagesColumns = PostImagesColumns{
 func NewPostImagesDao() *PostImagesDao {
 	return &PostImagesDao{
 		group:   "default",
-		table:   "postImages",
+		table:   "post_images",
 		columns: postImagesColumns,
 	}
 }

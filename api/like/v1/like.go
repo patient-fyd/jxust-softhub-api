@@ -6,7 +6,7 @@ import (
 
 // LikeToggleReq 点赞/取消点赞请求
 type LikeToggleReq struct {
-	g.Meta     `path:"/like-toggle" method:"post" tags:"点赞管理" summary:"点赞/取消点赞"`
+	g.Meta     `path:"/api/like/v1/like-toggle" method:"post" tags:"点赞管理" summary:"点赞/取消点赞"`
 	TargetId   int `json:"targetId" v:"required#目标ID不能为空"`   // 目标ID
 	TargetType int `json:"targetType" v:"required#目标类型不能为空"` // 目标类型：1-帖子，2-评论
 }

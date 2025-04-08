@@ -54,3 +54,13 @@ type CircleDetailOutput struct {
 	CreateTime  *gtime.Time `json:"createTime"`  // 创建时间
 	UpdateTime  *gtime.Time `json:"updateTime"`  // 更新时间
 }
+
+// CircleJoinInput 圈子关注/取消关注输入参数
+type CircleJoinInput struct {
+	CircleId int `json:"circleId" v:"required#圈子ID不能为空"` // 圈子ID
+}
+
+// CircleJoinOutput 圈子关注/取消关注输出参数
+type CircleJoinOutput struct {
+	IsFollowed bool `json:"isFollowed"` // 操作后的关注状态：true-已关注，false-未关注
+}

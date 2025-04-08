@@ -8,7 +8,7 @@ import (
 
 // FollowToggleReq 关注/取消关注请求
 type FollowToggleReq struct {
-	g.Meta     `path:"/follow-toggle" method:"post" tags:"关注管理" summary:"关注/取消关注"`
+	g.Meta     `path:"/api/follow/v1/follow-toggle" method:"post" tags:"关注管理" summary:"关注/取消关注"`
 	FollowedId int `json:"followedId" v:"required#被关注对象ID不能为空"` // 被关注对象ID
 	FollowType int `json:"followType" v:"required#关注类型不能为空"`    // 关注类型：1-用户，2-圈子
 }
@@ -22,7 +22,7 @@ type FollowToggleRes struct {
 
 // FollowingListReq 获取关注列表请求
 type FollowingListReq struct {
-	g.Meta     `path:"/following/list" method:"get" tags:"关注管理" summary:"获取关注列表"`
+	g.Meta     `path:"/api/follow/v1/following/list" method:"get" tags:"关注管理" summary:"获取关注列表"`
 	UserId     int `json:"userId" v:"required#用户ID不能为空"`     // 用户ID
 	FollowType int `json:"followType" v:"required#关注类型不能为空"` // 关注类型：1-用户，2-圈子
 	Page       int `json:"page" d:"1"`                       // 页码
@@ -39,7 +39,7 @@ type FollowingListRes struct {
 
 // FollowerListReq 获取粉丝列表请求
 type FollowerListReq struct {
-	g.Meta     `path:"/follower/list" method:"get" tags:"关注管理" summary:"获取粉丝列表"`
+	g.Meta     `path:"/api/follow/v1/follower/list" method:"get" tags:"关注管理" summary:"获取粉丝列表"`
 	FollowedId int `json:"followedId" v:"required#被关注对象ID不能为空"` // 被关注对象ID
 	FollowType int `json:"followType" v:"required#关注类型不能为空"`    // 关注类型：1-用户
 	Page       int `json:"page" d:"1"`                          // 页码

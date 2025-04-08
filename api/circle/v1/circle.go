@@ -56,3 +56,14 @@ type DetailRes struct {
 	CreateTime  string `json:"createTime"`  // 创建时间
 	UpdateTime  string `json:"updateTime"`  // 更新时间
 }
+
+// JoinReq 关注/取消关注圈子请求
+type JoinReq struct {
+	g.Meta   `path:"/api/circle/v1/join" method:"post" tags:"CircleService" summary:"关注或取消关注圈子"`
+	CircleId int `p:"circleId" v:"required#圈子ID不能为空" dc:"圈子ID"`
+}
+
+// JoinRes 关注/取消关注圈子响应
+type JoinRes struct {
+	IsFollowed bool `json:"isFollowed"` // 操作后的关注状态：true-已关注，false-未关注
+}

@@ -21,7 +21,7 @@ type CirclesDao struct {
 // CirclesColumns defines and stores column names for table circles.
 type CirclesColumns struct {
 	CircleId    string // 圈子ID
-	Name        string // 圈子名称
+	CircleName  string // 圈子名称
 	Description string // 圈子描述
 	Icon        string // 圈子图标
 	UserId      string // 创建者ID
@@ -36,7 +36,7 @@ type CirclesColumns struct {
 // circlesColumns holds the columns for table circles.
 var circlesColumns = CirclesColumns{
 	CircleId:    "circleId",
-	Name:        "name",
+	CircleName:  "circleName",
 	Description: "description",
 	Icon:        "icon",
 	UserId:      "userId",
