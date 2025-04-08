@@ -92,6 +92,28 @@ toggle_circle_join() {
   echo $response | python3 -m json.tool
 }
 
+# 获取我关注的圈子列表
+get_my_circles() {
+  echo -e "\n${BLUE}===== 获取我关注的圈子列表 =====${NC}"
+  
+  response=$(curl -s -X GET "${BASE_URL}/api/circle/v1/my?page=1&size=10" \
+    -H "Authorization: Bearer $TOKEN")
+  
+  # 格式化输出JSON
+  echo $response | python3 -m json.tool
+}
+
+# 获取圈子统计信息
+get_circle_stat() {
+  echo -e "\n${BLUE}===== 获取圈子统计信息 =====${NC}"
+  
+  response=$(curl -s -X GET "${BASE_URL}/api/circle/v1/stat" \
+    -H "Authorization: Bearer $TOKEN")
+  
+  # 格式化输出JSON
+  echo $response | python3 -m json.tool
+}
+
 # 主流程
 main() {
   login
@@ -117,11 +139,20 @@ main() {
   # 再次查看Python圈子详情，确认关注状态变化
   get_circle_detail 3
   
+  # 获取我关注的圈子列表
+  get_my_circles
+  
+  # 获取圈子统计信息
+  get_circle_stat
+  
   # 取消关注Python圈子
   toggle_circle_join 3
   
   # 最终查看Python圈子详情，确认关注状态恢复
   get_circle_detail 3
+  
+  # 再次获取我关注的圈子列表，确认圈子已被移除
+  get_my_circles
 }
 
 # 执行主流程

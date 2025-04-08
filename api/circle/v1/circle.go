@@ -67,3 +67,30 @@ type JoinReq struct {
 type JoinRes struct {
 	IsFollowed bool `json:"isFollowed"` // 操作后的关注状态：true-已关注，false-未关注
 }
+
+// MyCirclesReq 获取我关注的圈子列表请求
+type MyCirclesReq struct {
+	g.Meta `path:"/api/circle/v1/my" method:"get" tags:"CircleService" summary:"获取当前用户关注的圈子列表"`
+	Page   int `p:"page" v:"required|min:1#页码不能为空|页码必须大于0" dc:"页码"`
+	Size   int `p:"size" v:"required|min:1#每页条数不能为空|每页条数必须大于0" dc:"每页条数"`
+}
+
+// MyCirclesRes 获取我关注的圈子列表响应
+type MyCirclesRes struct {
+	List  []CircleItem `json:"list"`  // 圈子列表
+	Total int          `json:"total"` // 总数
+	Page  int          `json:"page"`  // 页码
+	Size  int          `json:"size"`  // 每页条数
+}
+
+// CircleStatReq 获取圈子统计信息请求
+type CircleStatReq struct {
+	g.Meta `path:"/api/circle/v1/stat" method:"get" tags:"CircleService" summary:"获取圈子统计信息"`
+}
+
+// CircleStatRes 获取圈子统计信息响应
+type CircleStatRes struct {
+	TotalCount     int          `json:"totalCount"`     // 圈子总数
+	FollowingCount int          `json:"followingCount"` // 我关注的圈子数量
+	RecentActive   []CircleItem `json:"recentActive"`   // 最近活跃的圈子
+}

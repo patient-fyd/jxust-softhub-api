@@ -41,3 +41,14 @@ func (i *implementerCircleV1) Join(ctx context.Context, req *v1.JoinReq) (res *v
 	err = i.Request(ctx, req, &res)
 	return
 }
+
+func (i *implementerCircleV1) MyCircles(ctx context.Context, req *v1.MyCirclesReq) (res *v1.MyCirclesRes, err error) {
+	err = i.Request(ctx, req, &res)
+	return
+}
+
+func (i *implementerCircleV1) CircleStat(ctx context.Context, req *v1.CircleStatReq) (res *v1.CircleStatRes, err error) {
+	err = i.Request(ctx, req, &res)
+	return
+}
+

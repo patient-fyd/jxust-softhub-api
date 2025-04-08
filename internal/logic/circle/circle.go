@@ -307,3 +307,192 @@ func (s *sCircle) Join(ctx context.Context, in model.CircleJoinInput) (*model.Ci
 		}, nil
 	}
 }
+
+// MyCircles 获取我关注的圈子列表
+func (s *sCircle) MyCircles(ctx context.Context, in model.CircleMyCirclesInput) (*model.CircleMyCirclesOutput, error) {
+	// 默认分页参数
+	if in.Page <= 0 {
+		in.Page = 1
+	}
+	if in.Size <= 0 {
+		in.Size = 10
+	}
+
+	// 要查询的用户ID
+	userId := in.UserId
+	if userId <= 0 {
+		// 获取当前登录用户ID
+		userId = gconv.Int(auth.GetLoginUserId(ctx))
+		if userId <= 0 {
+			return nil, gerror.New("请先登录")
+		}
+	}
+
+	// 获取用户关注的圈子ID列表
+	var followResults []struct {
+		FollowedId int
+	}
+	err := dao.Follows.Ctx(ctx).
+		Fields("followedId").
+		Where("userId", userId).
+		Where("followType", 2). // 2表示关注圈子
+		Scan(&followResults)
+	if err != nil {
+		return nil, err
+	}
+
+	// 提取圈子ID
+	circleIds := make([]int, 0, len(followResults))
+	for _, v := range followResults {
+		circleIds = append(circleIds, v.FollowedId)
+	}
+
+	// 准备输出结构
+	out := &model.CircleMyCirclesOutput{
+		Page: in.Page,
+		Size: in.Size,
+		List: make([]model.CircleListItem, 0),
+	}
+
+	// 如果没有关注任何圈子，直接返回空结果
+	if len(circleIds) == 0 {
+		out.Total = 0
+		return out, nil
+	}
+
+	// 查询符合条件的圈子总数
+	count, err := dao.Circles.Ctx(ctx).
+		Where("circleId IN(?)", circleIds).
+		Where("status", 1). // 只查询正常状态的圈子
+		Count()
+	if err != nil {
+		return nil, err
+	}
+	out.Total = count
+
+	// 如果没有数据，直接返回
+	if count == 0 {
+		return out, nil
+	}
+
+	// 查询圈子数据
+	var list []*entity.Circles
+	err = dao.Circles.Ctx(ctx).
+		Where("circleId IN(?)", circleIds).
+		Where("status", 1). // 只查询正常状态的圈子
+		Page(in.Page, in.Size).
+		Order("createTime DESC").
+		Scan(&list)
+	if err != nil {
+		return nil, err
+	}
+
+	// 转换结果格式
+	for _, v := range list {
+		item := model.CircleListItem{
+			CircleId:    gconv.Int(v.CircleId),
+			Name:        v.CircleName,
+			Description: v.Description,
+			Icon:        v.Icon,
+			PostCount:   gconv.Int(v.PostCount),
+			MemberCount: gconv.Int(v.MemberCount),
+			IsOfficial:  gconv.Int(v.IsOfficial),
+			IsFollowed:  true, // 这里一定是已关注的
+			CreateTime:  v.CreateTime,
+		}
+		out.List = append(out.List, item)
+	}
+
+	return out, nil
+}
+
+// CircleStat 获取圈子统计信息
+func (s *sCircle) CircleStat(ctx context.Context, in model.CircleStatInput) (*model.CircleStatOutput, error) {
+	// 要查询的用户ID
+	userId := in.UserId
+	if userId <= 0 {
+		// 获取当前登录用户ID
+		userId = gconv.Int(auth.GetLoginUserId(ctx))
+		if userId <= 0 {
+			return nil, gerror.New("请先登录")
+		}
+	}
+
+	// 准备输出结构
+	out := &model.CircleStatOutput{
+		RecentActive: make([]model.CircleListItem, 0),
+	}
+
+	// 查询圈子总数
+	totalCount, err := dao.Circles.Ctx(ctx).
+		Where("status", 1). // 只查询正常状态的圈子
+		Count()
+	if err != nil {
+		return nil, err
+	}
+	out.TotalCount = totalCount
+
+	// 查询用户关注的圈子数量
+	followingCount, err := dao.Follows.Ctx(ctx).
+		Where("userId", userId).
+		Where("followType", 2). // 2表示关注圈子
+		Count()
+	if err != nil {
+		return nil, err
+	}
+	out.FollowingCount = followingCount
+
+	// 查询最近活跃的圈子（按成员数和帖子数排序）
+	var list []*entity.Circles
+	err = dao.Circles.Ctx(ctx).
+		Where("status", 1). // 只查询正常状态的圈子
+		Order("memberCount DESC, postCount DESC, createTime DESC").
+		Limit(5).
+		Scan(&list)
+	if err != nil {
+		return nil, err
+	}
+
+	// 获取当前用户已关注的圈子
+	followedCircleMap := make(map[int]bool)
+	if userId > 0 && len(list) > 0 {
+		circleIds := make([]int, 0, len(list))
+		for _, v := range list {
+			circleIds = append(circleIds, gconv.Int(v.CircleId))
+		}
+
+		var followResults []struct {
+			FollowedId int
+		}
+		err = dao.Follows.Ctx(ctx).
+			Fields("followedId").
+			Where("userId", userId).
+			Where("followType", 2). // 2表示关注圈子
+			Where("followedId IN(?)", circleIds).
+			Scan(&followResults)
+		if err != nil {
+			return nil, err
+		}
+		for _, v := range followResults {
+			followedCircleMap[v.FollowedId] = true
+		}
+	}
+
+	// 转换结果格式
+	for _, v := range list {
+		item := model.CircleListItem{
+			CircleId:    gconv.Int(v.CircleId),
+			Name:        v.CircleName,
+			Description: v.Description,
+			Icon:        v.Icon,
+			PostCount:   gconv.Int(v.PostCount),
+			MemberCount: gconv.Int(v.MemberCount),
+			IsOfficial:  gconv.Int(v.IsOfficial),
+			IsFollowed:  followedCircleMap[gconv.Int(v.CircleId)],
+			CreateTime:  v.CreateTime,
+		}
+		out.RecentActive = append(out.RecentActive, item)
+	}
+
+	return out, nil
+}

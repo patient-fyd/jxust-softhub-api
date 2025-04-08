@@ -14,6 +14,10 @@ type ICircle interface {
 	Detail(ctx context.Context, in model.CircleDetailInput) (*model.CircleDetailOutput, error)
 	// Join 关注/取消关注圈子
 	Join(ctx context.Context, in model.CircleJoinInput) (*model.CircleJoinOutput, error)
+	// MyCircles 获取我关注的圈子列表
+	MyCircles(ctx context.Context, in model.CircleMyCirclesInput) (*model.CircleMyCirclesOutput, error)
+	// CircleStat 获取圈子统计信息
+	CircleStat(ctx context.Context, in model.CircleStatInput) (*model.CircleStatOutput, error)
 }
 
 // 获取圈子服务

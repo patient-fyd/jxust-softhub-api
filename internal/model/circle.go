@@ -64,3 +64,30 @@ type CircleJoinInput struct {
 type CircleJoinOutput struct {
 	IsFollowed bool `json:"isFollowed"` // 操作后的关注状态：true-已关注，false-未关注
 }
+
+// CircleMyCirclesInput 获取我关注的圈子列表输入参数
+type CircleMyCirclesInput struct {
+	Page   int `json:"page" v:"required|min:1#页码不能为空|页码必须大于0"`     // 页码
+	Size   int `json:"size" v:"required|min:1#每页条数不能为空|每页条数必须大于0"` // 每页条数
+	UserId int `json:"userId,omitempty"`                           // 用户ID，如果传入则查询指定用户，否则查询当前登录用户
+}
+
+// CircleMyCirclesOutput 获取我关注的圈子列表输出参数
+type CircleMyCirclesOutput struct {
+	List  []CircleListItem `json:"list"`  // 圈子列表
+	Total int              `json:"total"` // 总数
+	Page  int              `json:"page"`  // 页码
+	Size  int              `json:"size"`  // 每页条数
+}
+
+// CircleStatInput 获取圈子统计信息输入参数
+type CircleStatInput struct {
+	UserId int `json:"userId,omitempty"` // 用户ID，如果传入则查询指定用户，否则查询当前登录用户
+}
+
+// CircleStatOutput 获取圈子统计信息输出参数
+type CircleStatOutput struct {
+	TotalCount     int              `json:"totalCount"`     // 圈子总数
+	FollowingCount int              `json:"followingCount"` // 我关注的圈子数量
+	RecentActive   []CircleListItem `json:"recentActive"`   // 最近活跃的圈子
+}
