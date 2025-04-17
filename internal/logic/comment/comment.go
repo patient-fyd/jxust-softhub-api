@@ -211,11 +211,18 @@ func (s *sComment) Create(ctx context.Context, in model.CommentCreateInput) (*mo
 
 // filterSensitiveWords 过滤敏感词
 func (s *sComment) filterSensitiveWords(ctx context.Context, content string) (string, bool) {
+	// 尝试获取Redis实例
 	redis := g.Redis()
+	if redis == nil {
+		// Redis未配置，记录警告并直接返回原内容
+		g.Log().Warning(ctx, "Redis未配置，敏感词过滤功能不可用")
+		return content, false
+	}
 
 	// 从 Redis 获取敏感词列表
 	sensitiveWords, err := redis.SMembers(ctx, "sensitive_words")
 	if err != nil {
+		// 获取敏感词失败，记录错误并返回原内容
 		g.Log().Error(ctx, "获取敏感词列表失败:", err)
 		return content, false
 	}

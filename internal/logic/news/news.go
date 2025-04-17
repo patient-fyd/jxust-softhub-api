@@ -45,6 +45,11 @@ func (s *sNews) List(ctx context.Context, in model.NewsListInput) (*model.NewsLi
 		condition.Category = in.Category
 	}
 
+	// 添加新闻类型条件
+	if in.NewsType > 0 {
+		condition.NewsType = int(in.NewsType)
+	}
+
 	// 状态默认为已发布
 	condition.Status = 1
 
@@ -77,6 +82,7 @@ func (s *sNews) List(ctx context.Context, in model.NewsListInput) (*model.NewsLi
 			Id:         v.NewsId,
 			Title:      v.Title,
 			Category:   v.Category,
+			NewsType:   uint8(v.NewsType),
 			CoverImage: v.CoverImage,
 			ViewCount:  uint(v.ViewCount),
 			Status:     uint8(v.Status),
@@ -124,6 +130,7 @@ func (s *sNews) Detail(ctx context.Context, in model.NewsDetailInput) (*model.Ne
 		Title:      result.Title,
 		Content:    result.Content,
 		Category:   result.Category,
+		NewsType:   uint8(result.NewsType),
 		CoverImage: result.CoverImage,
 		ViewCount:  uint(result.ViewCount + 1), // +1 是因为刚增加的查看次数
 		Status:     uint8(result.Status),
@@ -146,6 +153,7 @@ func (s *sNews) Create(ctx context.Context, in model.NewsCreateInput) (*model.Ne
 		Title:      in.Title,
 		Content:    in.Content,
 		Category:   in.Category,
+		NewsType:   int(in.NewsType),
 		CoverImage: in.CoverImage,
 		AuthorId:   userId,
 		ViewCount:  0,
@@ -201,6 +209,11 @@ func (s *sNews) Update(ctx context.Context, in model.NewsUpdateInput) (*model.Ne
 	}
 	if in.CoverImage != "" {
 		updateData.CoverImage = in.CoverImage
+	}
+
+	// 设置新闻类型
+	if in.NewsType > 0 {
+		updateData.NewsType = int(in.NewsType)
 	}
 
 	updateData.Status = int(in.Status)

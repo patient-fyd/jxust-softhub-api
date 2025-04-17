@@ -35,6 +35,7 @@ func (c *ControllerV1) Detail(ctx context.Context, req *v1.DetailReq) (res *v1.D
 		Title:      output.Title,
 		Content:    output.Content,
 		Category:   output.Category,
+		NewsType:   output.NewsType,
 		CoverImage: output.CoverImage,
 		ViewCount:  output.ViewCount,
 		IsTop:      0, // 暂不实现置顶功能

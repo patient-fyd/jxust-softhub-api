@@ -10,6 +10,7 @@ import (
 	"github.com/gogf/gf/v2/os/glog"
 
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/auth"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/blog"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/circle"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/comment"
 	configCtrl "github.com/patient-fyd/jxust-softhub-api/internal/controller/config"
@@ -22,10 +23,12 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/post"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/stat"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/tag"
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/topic"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/user"
 
 	// 确保auth/user逻辑包被导入并执行其init函数
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/auth"
+	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/blog"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/circle"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/join"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/news"
@@ -110,75 +113,128 @@ var (
 
 			// 注册OpenAPI文档接口，不需要鉴权
 			s.Group("/", func(group *ghttp.RouterGroup) {
-				// 注册认证相关接口
-				group.Bind(
-					auth.NewV1(),
-				)
+				group.Middleware(ghttp.MiddlewareHandlerResponse)
 
-				// 注册成员管理相关接口
-				group.Bind(
-					member.NewV1(),
-				)
+				// 注册登录认证相关接口
+				group.Group("/api/auth", func(group *ghttp.RouterGroup) {
+					// 不需要鉴权的接口
+					group.Bind(
+						auth.NewV1(),
+					)
+				})
 
-				// 注册入会申请相关接口
-				group.Bind(
-					join.NewV1(),
-				)
+				// 用户相关接口
+				group.Group("/api/user", func(group *ghttp.RouterGroup) {
+					// 需要鉴权的接口
+					group.Middleware(service.Middleware().AuthMiddleware)
+					group.Bind(
+						user.NewV1(),
+					)
+				})
 
-				// 注册文件管理相关接口
-				group.Bind(
-					file.NewV1(),
-				)
+				// 系统配置接口
+				group.Group("/api/config", func(group *ghttp.RouterGroup) {
+					group.Bind(
+						configCtrl.NewV1(),
+					)
+				})
 
-				// 注册新闻管理相关接口
-				group.Bind(
-					news.NewV1(),
-				)
+				// 文件上传接口
+				group.Group("/api/file", func(group *ghttp.RouterGroup) {
+					group.Middleware(service.Middleware().AuthMiddleware)
+					group.Bind(
+						file.NewV1(),
+					)
+				})
 
-				// 注册统计分析相关接口
-				group.Bind(
-					stat.NewV1(),
-				)
+				// 团队成员接口
+				group.Group("/api/member", func(group *ghttp.RouterGroup) {
+					group.Bind(
+						member.NewV1(),
+					)
+				})
 
-				// 注册标签管理相关接口
-				group.Bind(
-					tag.NewV1(),
-				)
+				// 标签接口
+				group.Group("/api/tag", func(group *ghttp.RouterGroup) {
+					group.Bind(
+						tag.NewV1(),
+					)
+				})
 
-				// 注册系统配置相关接口
-				group.Bind(
-					configCtrl.NewV1(),
-				)
+				// 新闻接口
+				group.Group("/api/news", func(group *ghttp.RouterGroup) {
+					group.Bind(
+						news.NewV1(),
+					)
+				})
 
-				// 注册用户相关接口
-				group.Bind(
-					user.NewV1(),
-				)
+				// 统计接口
+				group.Group("/api/stat", func(group *ghttp.RouterGroup) {
+					group.Bind(
+						stat.NewV1(),
+					)
+				})
 
-				// 注册帖子相关接口
-				group.Bind(
-					post.NewV1(),
-				)
+				// 社团接口
+				group.Group("/api/circle", func(group *ghttp.RouterGroup) {
+					group.Bind(
+						circle.NewV1(),
+					)
+				})
 
-				// 注册评论相关接口
-				group.Bind(
-					comment.NewV1(),
-				)
+				// 申请加入接口
+				group.Group("/api/join", func(group *ghttp.RouterGroup) {
+					group.Middleware(service.Middleware().AuthMiddleware)
+					group.Bind(
+						join.NewV1(),
+					)
+				})
 
-				// 注册点赞相关接口
-				group.Bind(
-					like.NewV1(),
-				)
+				// 用户关注接口
+				group.Group("/api/follow", func(group *ghttp.RouterGroup) {
+					group.Middleware(service.Middleware().AuthMiddleware)
+					group.Bind(
+						follow.NewV1(),
+					)
+				})
 
-				// 注册关注相关接口
-				group.Bind(
-					follow.NewV1(),
-				)
+				// 点赞接口
+				group.Group("/api/like", func(group *ghttp.RouterGroup) {
+					group.Middleware(service.Middleware().AuthMiddleware)
+					group.Bind(
+						like.NewV1(),
+					)
+				})
 
-				// 注册圈子相关接口
-				group.Bind(
-					circle.NewV1(),
-				)
+				// 评论接口
+				group.Group("/api/comment", func(group *ghttp.RouterGroup) {
+					group.Middleware(service.Middleware().AuthMiddleware)
+					group.Bind(
+						comment.NewV1(),
+					)
+				})
+
+				// 帖子接口
+				group.Group("/api/post", func(group *ghttp.RouterGroup) {
+					group.Bind(
+						post.NewV1(),
+					)
+				})
+
+				// 热门话题接口
+				group.Group("/api/topic", func(group *ghttp.RouterGroup) {
+					group.Bind(
+						topic.NewV1(),
+					)
+				})
+
+				// 博客接口
+				group.Group("/api/blog", func(group *ghttp.RouterGroup) {
+					// 博客接口无需鉴权，允许游客访问
+					group.Bind(
+						blog.NewV1(),
+					)
+				})
 			})
 
 			s.Run()

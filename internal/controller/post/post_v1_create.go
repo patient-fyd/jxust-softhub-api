@@ -41,10 +41,17 @@ func (c *ControllerV1) Create(ctx context.Context, req *v1.CreateReq) (res *v1.C
 
 	// 转换请求参数
 	input := model.PostCreateInput{
-		Content:  req.Content,
-		Images:   req.Images,
-		CircleId: req.CircleId,
-		TopicId:  req.TopicId,
+		Content: req.Content,
+		Images:  req.Images,
+	}
+
+	// 只添加大于0的值
+	if req.CircleId > 0 {
+		input.CircleId = req.CircleId
+	}
+
+	if req.TopicId > 0 {
+		input.TopicId = req.TopicId
 	}
 
 	// 初始化空图片数组，防止空指针

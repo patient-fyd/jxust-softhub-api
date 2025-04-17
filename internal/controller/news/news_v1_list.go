@@ -24,6 +24,7 @@ func (c *ControllerV1) List(ctx context.Context, req *v1.ListReq) (res *v1.ListR
 	// 构造查询参数
 	input := model.NewsListInput{
 		Category: req.Category,
+		NewsType: req.NewsType,
 		Page:     req.Page,
 		PageSize: req.PageSize,
 	}
@@ -48,6 +49,7 @@ func (c *ControllerV1) List(ctx context.Context, req *v1.ListReq) (res *v1.ListR
 			Id:         item.Id,
 			Title:      item.Title,
 			Category:   item.Category,
+			NewsType:   item.NewsType,
 			CoverImage: item.CoverImage,
 			ViewCount:  item.ViewCount,
 			IsTop:      0, // 暂不实现置顶功能

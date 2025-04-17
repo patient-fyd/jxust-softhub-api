@@ -426,12 +426,21 @@ func (s *sPost) Create(ctx context.Context, in model.PostCreateInput) (*model.Po
 	data := g.Map{
 		"userId":     userId,
 		"content":    in.Content,
-		"circleId":   in.CircleId,
-		"topicId":    in.TopicId,
 		"status":     1, // 1-已发布
 		"createTime": gtime.Now(),
 		"updateTime": gtime.Now(),
 	}
+
+	// 只在有效值时添加circleId
+	if in.CircleId > 0 {
+		data["circleId"] = in.CircleId
+	}
+
+	// 只在有效值时添加topicId
+	if in.TopicId > 0 {
+		data["topicId"] = in.TopicId
+	}
+
 	g.Log().Debugf(ctx, "准备插入的帖子数据: %+v", data)
 
 	// 简化版本 - 直接插入而不使用事务

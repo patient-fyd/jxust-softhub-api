@@ -1,6 +1,6 @@
 # doc: https://goframe.org/pages/viewpage.action?pageId=44449486
 server:
-  address: ":8080"
+  address: ":9000"
   keepAlive: true # 是否开启Keep-Alive功能. 默认true
   idleTimeout: "60s" # 仅当Keep-Alive开启时有效, 请求闲置时间. 默认为60秒
   maxHeaderBytes: "10240" # 请求Header大小限制(Byte). 默认为10KB
@@ -20,10 +20,6 @@ server:
   # NOTE: 不建议使用此特性, 特别是通过systemd、supervisor管理进程的场景, 或容器化场景, 不要开启此特性
   graceful: false # 是否开启平滑重启特性, 开启时将会在本地增加10000的本地TCP端口用于进程间通信. 默认false. 平滑重启: kill -SIGUSR1 进程ID
   gracefulTimeout: 10 # 父进程在平滑重启后多少秒退出, 默认2秒. 若请求耗时大于该值, 可能会导致请求中断
-
-  # PProf配置
-  pprofEnabled: false # 是否开启PProf性能调试特性. 默认为false
-  pprofPattern: "" # 开启PProf时有效, 表示PProf特性的页面访问路径, 对当前Server绑定的所有域名有效. 默认值: /debug/pprof
 
   # 服务日志(包括访问日志和server错误日志)
   logPath: "logs/" # 日志文件存储目录路径, 建议使用绝对路径. 默认为空, 表示关闭
@@ -89,6 +85,7 @@ database:
     rotateBackupLimit: 30
     rotateCheckInterval: "1h"
 
+  # 默认分组
   default:
     link: "mysql:root:agbxxaql8@tcp(127.0.0.1:3306)/jxust_softhub"
     debug: true # 默认 false
@@ -101,8 +98,10 @@ redis:
     # 是否强制设置为集群工作模式, 默认值：false.
     # NOTE: 当address是单个endpoint的集群时，系统会自动判定为单实例模式，这时需要设置此项为true.
     cluster: false
-    # NOTE: redis cluster 不支持index, 自动忽略该配置.
+    # 数据库索引(0-15), 默认值: 0.
+    # NOTE: redis cluster 不支持index, 将自动忽略该配置.
     db: 0
+    # 访问授权密码
     pass:
     # 连接最长存活时间, 默认值: 30s, 建议设置的长一些.
     # 建立连接后, 可用此连接进行多次reids请求,
@@ -111,7 +110,7 @@ redis:
     # 除非请求是一个阻塞式请求, 比如: BLPop等, 此时连接将始终保持,
     # 直到从队列读取到数据才会断开连接.
     maxConnLifetime: 30m
-    # 连接最大空闲时间, 默认值: 10s, 建议设置的长一些.
+    # 连接最大空闲时间, 默认值: 10s;
     # 只要连接空闲(没有新请求)超过idleTimeout后, 就会断开连接.
     # 此值应该小于maxConnLifetime, 才有实际意义.
     idleTimeout: 10m
@@ -122,3 +121,10 @@ redis:
     pass:
     maxConnLifetime: 30m
     idleTimeout: 10m
+
+# JWT配置
+jwt:
+  # JWT密钥
+  secret: "jxust-softhub-api-secret-key"
+  # JWT过期时间，单位秒，默认8小时
+  expire: 28800

@@ -20,6 +20,7 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/api/like"
 	"github.com/patient-fyd/jxust-softhub-api/api/post"
 	"github.com/patient-fyd/jxust-softhub-api/api/topic"
+	"github.com/patient-fyd/jxust-softhub-api/api/blog"
 )
 
 type IClient interface {
@@ -39,4 +40,5 @@ type IClient interface {
 	LikeV1() like.ILikeV1
 	PostV1() post.IPostV1
 	TopicV1() topic.ITopicV1
+	BlogV1() blog.IBlogV1
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gogf/gf/v2/os/gctx"
 
+	_ "github.com/patient-fyd/jxust-softhub-api/api/blog"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/packed"
 
@@ -12,5 +13,7 @@ import (
 )
 
 func main() {
-	apiserver.Main.Run(gctx.New())
+	ctx := gctx.New()
+
+	apiserver.Main.Run(ctx)
 }
