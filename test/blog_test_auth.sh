@@ -89,7 +89,7 @@ login() {
     exit 1
   fi
   
-  response=$(curl -s -X POST "${BASE_URL}/api/user/v1/login" \
+  response=$(curl -s -X POST "${BASE_URL}/api/auth/v1/login" \
     -H "Content-Type: application/json" \
     -d "{\"userName\":\"$username\",\"password\":\"$password\"}")
   

@@ -107,7 +107,8 @@ var (
 			s.Use(
 				service.Middleware().TraceID,
 				service.Middleware().AccessUser,
-				service.Middleware().AuthMiddleware,
+				// 移除全局鉴权中间件，改为按需添加
+				// service.Middleware().AuthMiddleware,
 				service.Middleware().ResponseHandler,
 			)
 
@@ -115,126 +116,36 @@ var (
 			s.Group("/", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareHandlerResponse)
 
-				// 注册登录认证相关接口
-				group.Group("/api/auth", func(group *ghttp.RouterGroup) {
-					// 不需要鉴权的接口
-					group.Bind(
-						auth.NewV1(),
-					)
-				})
+				// 认证相关接口
+				group.Bind(auth.NewV1())
 
-				// 用户相关接口
-				group.Group("/api/user", func(group *ghttp.RouterGroup) {
-					// 需要鉴权的接口
-					group.Middleware(service.Middleware().AuthMiddleware)
-					group.Bind(
-						user.NewV1(),
-					)
-				})
+				// 需要鉴权的接口
+				securedHandlers := []interface{}{
+					user.NewV1(),
+					configCtrl.NewV1(),
+					file.NewV1(),
+					member.NewV1(),
+					tag.NewV1(),
+					stat.NewV1(),
+					circle.NewV1(),
+					join.NewV1(),
+					follow.NewV1(),
+					like.NewV1(),
+					comment.NewV1(),
+				}
 
-				// 系统配置接口
-				group.Group("/api/config", func(group *ghttp.RouterGroup) {
-					group.Bind(
-						configCtrl.NewV1(),
-					)
-				})
+				for _, handler := range securedHandlers {
+					group.Group("/", func(g *ghttp.RouterGroup) {
+						g.Middleware(service.Middleware().AuthMiddleware)
+						g.Bind(handler)
+					})
+				}
 
-				// 文件上传接口
-				group.Group("/api/file", func(group *ghttp.RouterGroup) {
-					group.Middleware(service.Middleware().AuthMiddleware)
-					group.Bind(
-						file.NewV1(),
-					)
-				})
-
-				// 团队成员接口
-				group.Group("/api/member", func(group *ghttp.RouterGroup) {
-					group.Bind(
-						member.NewV1(),
-					)
-				})
-
-				// 标签接口
-				group.Group("/api/tag", func(group *ghttp.RouterGroup) {
-					group.Bind(
-						tag.NewV1(),
-					)
-				})
-
-				// 新闻接口
-				group.Group("/api/news", func(group *ghttp.RouterGroup) {
-					group.Bind(
-						news.NewV1(),
-					)
-				})
-
-				// 统计接口
-				group.Group("/api/stat", func(group *ghttp.RouterGroup) {
-					group.Bind(
-						stat.NewV1(),
-					)
-				})
-
-				// 社团接口
-				group.Group("/api/circle", func(group *ghttp.RouterGroup) {
-					group.Bind(
-						circle.NewV1(),
-					)
-				})
-
-				// 申请加入接口
-				group.Group("/api/join", func(group *ghttp.RouterGroup) {
-					group.Middleware(service.Middleware().AuthMiddleware)
-					group.Bind(
-						join.NewV1(),
-					)
-				})
-
-				// 用户关注接口
-				group.Group("/api/follow", func(group *ghttp.RouterGroup) {
-					group.Middleware(service.Middleware().AuthMiddleware)
-					group.Bind(
-						follow.NewV1(),
-					)
-				})
-
-				// 点赞接口
-				group.Group("/api/like", func(group *ghttp.RouterGroup) {
-					group.Middleware(service.Middleware().AuthMiddleware)
-					group.Bind(
-						like.NewV1(),
-					)
-				})
-
-				// 评论接口
-				group.Group("/api/comment", func(group *ghttp.RouterGroup) {
-					group.Middleware(service.Middleware().AuthMiddleware)
-					group.Bind(
-						comment.NewV1(),
-					)
-				})
-
-				// 帖子接口
-				group.Group("/api/post", func(group *ghttp.RouterGroup) {
-					group.Bind(
-						post.NewV1(),
-					)
-				})
-
-				// 热门话题接口
-				group.Group("/api/topic", func(group *ghttp.RouterGroup) {
-					group.Bind(
-						topic.NewV1(),
-					)
-				})
-
-				// 博客接口
-				group.Group("/api/blog", func(group *ghttp.RouterGroup) {
-					// 博客接口无需鉴权，允许游客访问
-					group.Bind(
-						blog.NewV1(),
-					)
-				})
+				// 不需要鉴权的接口
+				group.Bind(blog.NewV1())
+				group.Bind(topic.NewV1())
+				group.Bind(post.NewV1())
+				group.Bind(news.NewV1()) // 根据需要加鉴权，中间件可以保留注释提示
 			})
 
 			s.Run()
