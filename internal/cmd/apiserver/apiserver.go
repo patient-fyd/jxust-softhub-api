@@ -9,6 +9,7 @@ import (
 	"github.com/gogf/gf/v2/os/gcmd"
 	"github.com/gogf/gf/v2/os/glog"
 
+	"github.com/patient-fyd/jxust-softhub-api/internal/controller/activity"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/auth"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/blog"
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/circle"
@@ -27,6 +28,7 @@ import (
 	"github.com/patient-fyd/jxust-softhub-api/internal/controller/user"
 
 	// 确保auth/user逻辑包被导入并执行其init函数
+	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/activity"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/auth"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/blog"
 	_ "github.com/patient-fyd/jxust-softhub-api/internal/logic/circle"
@@ -146,6 +148,26 @@ var (
 				group.Bind(topic.NewV1())
 				group.Bind(post.NewV1())
 				group.Bind(news.NewV1()) // 根据需要加鉴权，中间件可以保留注释提示
+
+				// 活动相关接口，部分接口需要鉴权
+				// 获取活动列表和详情不需要鉴权
+				group.Group("/", func(g *ghttp.RouterGroup) {
+					// 不需要鉴权的接口
+					g.GET("/api/activity/v1/list", activity.NewV1().List)
+					g.GET("/api/activity/v1/detail/{activityId}", activity.NewV1().Detail)
+
+					// 需要鉴权的接口
+					g.Group("/", func(g *ghttp.RouterGroup) {
+						g.Middleware(service.Middleware().AuthMiddleware)
+						g.POST("/api/activity/v1/create", activity.NewV1().Create)
+						g.PUT("/api/activity/v1/update", activity.NewV1().Update)
+						g.POST("/api/activity/v1/register", activity.NewV1().Register)
+						g.DELETE("/api/activity/v1/delete/{activityId}", activity.NewV1().Delete)
+						g.GET("/api/activity/v1/register/list", activity.NewV1().RegisterList)
+						g.POST("/api/activity/v1/register/approve", activity.NewV1().ApproveRegistration)
+						g.POST("/api/activity/v1/register/reject", activity.NewV1().RejectRegistration)
+					})
+				})
 			})
 
 			s.Run()
